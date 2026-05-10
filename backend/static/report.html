@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析报告 - 焦点小组讨论系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        
+        * {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .page-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-logo {
+            font-size: 1.5rem;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-back {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-back:hover {
+            background: #4b5563;
+        }
+        
+        .btn-print {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-print:hover {
+            background: #2563eb;
+        }
+        
+        .btn-pdf {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-pdf:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+        }
+        
+        .report-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .report-meta {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .report-body {
+            padding: 2rem;
+        }
+        
+        .report-content {
+            line-height: 1.8;
+            color: #374151;
+        }
+        
+        .report-content h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .report-content h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+            margin: 1.5rem 0 0.75rem;
+        }
+        
+        .report-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin: 1.25rem 0 0.5rem;
+        }
+        
+        .report-content p {
+            margin: 0.75rem 0;
+            color: #4b5563;
+        }
+        
+        .report-content ul, .report-content ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .report-content li {
+            margin: 0.5rem 0;
+            color: #4b5563;
+        }
+        
+        .report-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .report-content th {
+            background: #f3f4f6;
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .report-content td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .report-content tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .report-content tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .report-content strong, .report-content b {
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .report-content hr {
+            border: none;
+            border-top: 2px solid #e5e7eb;
+            margin: 2rem 0;
+        }
+        
+        .report-content blockquote {
+            border-left: 4px solid #667eea;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background: #f3f4f6;
+            border-radius: 0 0.5rem 0.5rem 0;
+            color: #4b5563;
+            font-style: italic;
+        }
+        
+        .loading-container {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-container {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .error-message {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .page-header {
+                display: none;
+            }
+            .main-content {
+                padding: 0;
+                max-width: none;
+            }
+            .report-card {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-left">
+            <span class="header-logo">📊</span>
+            <span class="header-title">分析报告</span>
+        </div>
+        <div class="header-right">
+            <button id="back-btn" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i>
+                返回
+            </button>
+            <button id="print-btn" class="btn btn-print">
+                <i class="fas fa-print"></i>
+                打印
+            </button>
+            <button id="export-pdf-btn" class="btn btn-pdf">
+                <i class="fas fa-file-pdf"></i>
+                导出 PDF
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="report-card">
+            <div class="report-header">
+                <h1 id="report-title">加载中...</h1>
+                <p id="report-meta" class="report-meta">正在获取报告信息...</p>
+            </div>
+            
+            <div class="report-body">
+                <div id="loading-indicator" class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p id="loading-text" style="color: #6b7280;">正在加载报告内容...</p>
+                </div>
+                
+                <div id="report-content" class="report-content" style="display: none;"></div>
+                
+                <div id="error-container" class="error-container" style="display: none;">
+                    <div class="error-icon">😔</div>
+                    <h2 class="error-title">加载失败</h2>
+                    <p id="error-message" class="error-message">无法加载报告</p>
+                    <button id="retry-btn" class="btn btn-print">
+                        <i class="fas fa-redo"></i>
+                        重试
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = '/api';
+        
+        // 显示Toast通知
+        function showToast(message, type = 'info') {
+            const icons = {
+                info: '📢',
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+            
+            // 创建Toast元素
+            let toast = document.getElementById('toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-notification';
+                toast.style.cssText = 'position: fixed; bottom: 32px; right: 32px; background: rgba(31, 41, 55, 0.95); color: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); z-index: 9999; display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(16px); transition: all 0.3s ease;';
+                document.body.appendChild(toast);
+            }
+            
+            // 设置内容
+            toast.innerHTML = `
+                <span style="font-size: 20px;">${icons[type] || icons.info}</span>
+                <span style="font-weight: 500;">${message}</span>
+            `;
+            
+            // 显示
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+            
+            // 3.5秒后隐藏
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(4px)';
+            }, 3500);
+        }
+        
+        function getScenarioIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('scenario_id');
+        }
+        
+        async function loadReport() {
+            const scenarioId = getScenarioIdFromUrl();
+            
+            if (!scenarioId) {
+                showError('缺少场景ID参数，请从主页进入报告页面');
+                return;
+            }
+            
+            document.getElementById('loading-indicator').style.display = 'block';
+            document.getElementById('report-content').style.display = 'none';
+            document.getElementById('error-container').style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/report`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        await generateReport(scenarioId);
+                        return;
+                    } else if (response.status === 401) {
+                        document.getElementById('loading-indicator').style.display = 'none';
+                        showError('请先登录后再查看报告');
+                    } else {
+                        document.getElementById('loading-indicator').style.display = 'none';
+                        showError(`加载失败 (错误码: ${response.status})`);
+                    }
+                    return;
+                }
+                
+                const report = await response.json();
+                
+                document.getElementById('loading-indicator').style.display = 'none';
+                
+                document.getElementById('report-title').textContent = report.report_title || '分析报告';
+                document.getElementById('report-meta').textContent = `报告生成时间：${report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知'}`;
+                
+                const formattedContent = formatContent(report.content || '');
+                document.getElementById('report-content').innerHTML = formattedContent;
+                
+                document.getElementById('report-content').style.display = 'block';
+                
+            } catch (error) {
+                console.error('加载报告失败:', error);
+                document.getElementById('loading-indicator').style.display = 'none';
+                showError('网络错误，请检查网络连接后重试');
+            }
+        }
+        
+        async function generateReport(scenarioId) {
+            document.getElementById('loading-indicator').style.display = 'block';
+            document.getElementById('loading-text').textContent = '正在生成分析报告，请稍候...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/generate-report`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    if (response.status === 400) {
+                        const errorData = await response.json();
+                        showError(errorData.error || '请先进行对话模拟');
+                    } else {
+                        showError(`生成报告失败 (错误码: ${response.status})`);
+                    }
+                    return;
+                }
+                
+                const report = await response.json();
+                
+                document.getElementById('loading-indicator').style.display = 'none';
+                
+                document.getElementById('report-title').textContent = report.report_title || '分析报告';
+                document.getElementById('report-meta').textContent = `报告生成时间：${report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知'}`;
+                
+                const formattedContent = formatContent(report.content || '');
+                document.getElementById('report-content').innerHTML = formattedContent;
+                
+                document.getElementById('report-content').style.display = 'block';
+                
+            } catch (error) {
+                console.error('生成报告失败:', error);
+                document.getElementById('loading-indicator').style.display = 'none';
+                showError('生成报告失败，请重试');
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loading-indicator').style.display = 'none';
+            document.getElementById('report-content').style.display = 'none';
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('error-message').textContent = message;
+        }
+        
+        function formatContent(content) {
+            if (!content) return '<p>报告内容为空</p>';
+
+            let text = content;
+
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            const lines = text.split('\n');
+            const result = [];
+            let i = 0;
+            let inTable = false;
+            let tableRows = [];
+
+            while (i < lines.length) {
+                let line = lines[i].trim();
+
+                if (line.length === 0) {
+                    if (inTable) {
+                        result.push('</tbody></table>');
+                        result.push('<br>');
+                        inTable = false;
+                        tableRows = [];
+                    }
+                    i++;
+                    continue;
+                }
+
+                if (line.startsWith('#')) {
+                    if (inTable) {
+                        result.push('</tbody></table>');
+                        result.push('<br>');
+                        inTable = false;
+                        tableRows = [];
+                    }
+                    const match = line.match(/^(#{1,6})\s(.+)$/);
+                    if (match) {
+                        const level = match[1].length;
+                        result.push(`<h${level}>${match[2]}</h${level}>`);
+                    }
+                    i++;
+                    continue;
+                }
+
+                if (line.match(/^\|.+\|$/)) {
+                    const cells = line.split('|').map(c => c.trim()).filter(c => c && !c.match(/^-+$/));
+
+                    if (cells.length > 0) {
+                        if (!inTable) {
+                            inTable = true;
+                            tableRows = [];
+                            result.push('<table class="report-table">');
+                        }
+
+                        const isSeparator = line.match(/^\|[-:\s]+\|[-:\s]+\|$/);
+
+                        if (isSeparator) {
+                            i++;
+                            continue;
+                        }
+
+                        tableRows.push(cells);
+
+                        if (tableRows.length === 1) {
+                            result.push('<thead><tr>');
+                            cells.forEach(cell => {
+                                result.push(`<th>${cell}</th>`);
+                            });
+                            result.push('</tr></thead><tbody>');
+                        } else {
+                            result.push('<tr>');
+                            cells.forEach(cell => {
+                                result.push(`<td>${cell}</td>`);
+                            });
+                            result.push('</tr>');
+                        }
+                    }
+                    i++;
+                    continue;
+                } else {
+                    if (inTable) {
+                        result.push('</tbody></table>');
+                        result.push('<br>');
+                        inTable = false;
+                        tableRows = [];
+                    }
+                }
+
+                if (line.startsWith('-') || line.startsWith('*')) {
+                    result.push(`<li>${line.substring(1).trim()}</li>`);
+                    i++;
+                    continue;
+                }
+
+                if (line.match(/^\d+\./)) {
+                    result.push(`<li>${line.replace(/^\d+\.\s*/, '')}</li>`);
+                    i++;
+                    continue;
+                }
+
+                if (line === '---') {
+                    result.push('<hr>');
+                    i++;
+                    continue;
+                }
+
+                result.push(`<p>${line}</p>`);
+                i++;
+            }
+
+            if (inTable) {
+                result.push('</tbody></table>');
+            }
+
+            const listContent = result.join('\n');
+            const paragraphs = listContent.split('\n');
+            const merged = [];
+            let inList = false;
+
+            for (const p of paragraphs) {
+                if (p.startsWith('<li>')) {
+                    if (!inList) {
+                        merged.push('<ul>' + p);
+                        inList = true;
+                    } else {
+                        merged.push(p);
+                    }
+                } else {
+                    if (inList) {
+                        merged.push('</ul>' + p);
+                        inList = false;
+                    } else {
+                        merged.push(p);
+                    }
+                }
+            }
+
+            if (inList) {
+                merged.push('</ul>');
+            }
+
+            return merged.join('\n');
+        }
+        
+        document.getElementById('back-btn').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+        
+        document.getElementById('print-btn').addEventListener('click', () => {
+            window.print();
+        });
+        
+        document.getElementById('export-pdf-btn').addEventListener('click', async () => {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                alert('无法获取场景ID');
+                return;
+            }
+            
+            const button = document.getElementById('export-pdf-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/report/pdf`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error || '导出PDF失败');
+                    return;
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `分析报告_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showToast('PDF导出成功！', 'success');
+            } catch (error) {
+                console.error('导出PDF失败:', error);
+                alert('导出PDF失败，请重试');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+        
+        document.getElementById('retry-btn').addEventListener('click', loadReport);
+        
+        document.addEventListener('DOMContentLoaded', loadReport);
+    </script>
+</body>
+</html>

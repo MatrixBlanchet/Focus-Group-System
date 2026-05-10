@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟焦点小组深度访谈系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .participant-card {
+            transition: all 0.3s ease;
+        }
+        
+        .participant-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .occasion-card {
+            transition: all 0.25s ease;
+        }
+        
+        .occasion-card:hover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.08);
+        }
+        
+        .login-card {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+        }
+        
+        .btn-purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-purple:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.39);
+        }
+        
+        .btn-indigo {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-indigo:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+        }
+        
+        .input-field {
+            transition: all 0.2s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* 场景卡片动效 */
+        .scenario-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .scenario-card.ring-2 {
+            animation: cardSelect 0.3s ease-out;
+        }
+
+        @keyframes cardSelect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* 面板切换动效 */
+        .panel-transition {
+            animation: panelFade 0.3s ease-in-out;
+        }
+
+        @keyframes panelFade {
+            0% { opacity: 0; transform: translateX(10px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 按钮点击动效 */
+        button:active {
+            transform: scale(0.96);
+        }
+
+        /* 消息发送动效 */
+        .message-container {
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 输入框聚焦动效 */
+        textarea:focus, input:focus {
+            transition: all 0.2s ease;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Toast 提示动画 */
+        .toast-enter {
+            animation: toastSlideDown 0.3s ease-out;
+        }
+
+        .toast-exit {
+            animation: toastSlideUp 0.3s ease-in;
+        }
+
+        @keyframes toastSlideDown {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toastSlideUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 徽章悬停动效 */
+        .badge {
+            transition: all 0.2s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+
+        /* 导航链接动效 */
+        .nav-link {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* 模态框动画 */
+        .modal-enter {
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* 列表项入场动画 */
+        .list-item {
+            animation: listItemFadeIn 0.3s ease-out backwards;
+        }
+
+        .list-item:nth-child(1) { animation-delay: 0.05s; }
+        .list-item:nth-child(2) { animation-delay: 0.1s; }
+        .list-item:nth-child(3) { animation-delay: 0.15s; }
+        .list-item:nth-child(4) { animation-delay: 0.2s; }
+        .list-item:nth-child(5) { animation-delay: 0.25s; }
+        .list-item:nth-child(6) { animation-delay: 0.3s; }
+
+        @keyframes listItemFadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 聊天消息样式 */
+        .message-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .message-container.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .message-avatar.host {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .message-avatar.participant {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .message-avatar.user {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message-bubble.host {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-bubble.participant {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-bubble.user {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .message-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .message-bubble.host .message-name {
+            color: #1d4ed8;
+        }
+
+        .message-bubble.participant .message-name {
+            color: #374151;
+        }
+
+        .message-bubble.user .message-name {
+            color: white;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .message-bubble.user .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-content {
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .message-bubble.user .message-content {
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            transition: all 0.2s ease;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-1px);
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .badge {
+            font-weight: 500;
+        }
+        
+        .message-host {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .message-participant {
+            background: #f8fafc;
+            border-left: 4px solid #94a3b8;
+        }
+        
+        .user-avatar {
+            background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%);
+        }
+        
+        .host-avatar {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+    <!-- 登录/注册模态框 -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md login-card animate-slide-up">
+            <div class="flex justify-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span class="text-4xl">🎯</span>
+                </div>
+            </div>
+            
+            <!-- 标签切换 -->
+            <div class="flex border-b-2 border-gray-100 mb-8">
+                <button id="login-tab" class="flex-1 py-4 text-center font-semibold text-blue-600 border-b-2 border-blue-600 transition-all" onclick="showLogin()">登录</button>
+                <button id="register-tab" class="flex-1 py-4 text-center font-semibold text-gray-400 hover:text-gray-600 transition-all" onclick="showRegister()">注册</button>
+            </div>
+            
+            <!-- 登录表单 -->
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                    <input type="text" id="login-username" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="请输入用户名">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                    <input type="password" id="login-password" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="请输入密码">
+                </div>
+                <button type="button" class="w-full btn-primary text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all" onclick="login()">登录</button>
+            </form>
+            
+            <!-- 注册表单 -->
+            <form id="register-form" class="space-y-5 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                    <input type="text" id="register-username" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="请输入用户名">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
+                    <input type="email" id="register-email" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="请输入邮箱">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                    <input type="password" id="register-password" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="请输入密码">
+                </div>
+                <button type="button" class="w-full btn-success text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all" onclick="register()">注册</button>
+            </form>
+            
+            <button class="mt-6 w-full text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors" onclick="closeAuthModal()">返回首页</button>
+        </div>
+    </div>
+
+    <!-- 侧边栏 -->
+    <div class="flex h-screen">
+        <div class="w-72 bg-white shadow-xl flex flex-col">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <span class="text-white font-bold text-2xl">🎯</span>
+                    </div>
+                    <div class="ml-4">
+                        <h1 class="font-bold text-gray-800 text-lg">焦点小组系统</h1>
+                        <p class="text-xs text-gray-500">Virtual Focus Group</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 用户信息 -->
+            <div id="user-info" class="p-5 border-b border-gray-100 hidden animate-fade-in">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 user-avatar rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">👤</span>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p id="user-name" class="font-semibold text-gray-800">用户</p>
+                        <p id="user-email" class="text-sm text-gray-500">email@example.com</p>
+                    </div>
+                </div>
+                <button id="logout-btn" class="mt-4 w-full text-sm text-red-500 hover:text-red-600 py-3 border border-red-100 rounded-xl hover:bg-red-50 transition-all flex items-center justify-center gap-2">
+                    <span>🚪</span> 退出登录
+                </button>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 p-4">
+                <div class="space-y-2">
+                    <button class="nav-link w-full text-left px-5 py-3.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-3" onclick="showPanel('scenarios')">
+                        <span class="text-lg">📋</span>
+                        <span class="font-medium">场景管理</span>
+                    </button>
+                    <button class="nav-link w-full text-left px-5 py-3.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-3" onclick="showPanel('participants')">
+                        <span class="text-lg">👥</span>
+                        <span class="font-medium">参与者</span>
+                    </button>
+                    <button class="nav-link w-full text-left px-5 py-3.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-3" onclick="showPanel('conversation')">
+                        <span class="text-lg">💬</span>
+                        <span class="font-medium">讨论记录</span>
+                    </button>
+                    <button class="nav-link w-full text-left px-5 py-3.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-3" onclick="showPanel('report')">
+                        <span class="text-lg">📊</span>
+                        <span class="font-medium">分析报告</span>
+                    </button>
+                </div>
+            </nav>
+            
+            <!-- 登录按钮 -->
+            <div id="login-prompt" class="p-4 border-t border-gray-100">
+                <button class="w-full btn-primary text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2" onclick="openAuthModal()">
+                    <span>🔐</span> 登录 / 注册
+                </button>
+            </div>
+            
+            <!-- AI状态 -->
+            <div class="p-4 border-t border-gray-100">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse-slow"></div>
+                    <span class="text-sm text-gray-600 font-medium">AI主持人 在线</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="flex-1 overflow-auto">
+            <!-- 顶部栏 -->
+            <header class="bg-white/80 backdrop-blur-md shadow-sm px-8 py-5 sticky top-0 z-40">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 id="page-title" class="text-2xl font-bold text-gray-800">场景管理</h2>
+                        <p id="page-subtitle" class="text-sm text-gray-500 mt-1">管理您的焦点小组讨论场景</p>
+                    </div>
+                    <button id="new-scenario-btn" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">+</span> 新建场景
+                    </button>
+                </div>
+            </header>
+
+            <!-- 场景管理面板 -->
+            <div id="scenarios-panel" class="p-8">
+                <div id="scenarios-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="col-span-full text-center text-gray-400 py-16">
+                        <div class="text-6xl mb-6">📭</div>
+                        <p class="text-lg">暂无场景，请创建新场景</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 参与者面板 -->
+            <div id="participants-panel" class="p-8 hidden">
+                <div class="mb-8 flex flex-wrap gap-4">
+                    <button id="generate-participants-btn" class="btn-success text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">✨</span> 生成AI参与者
+                    </button>
+                    <button id="regenerate-participants-btn" class="btn-warning text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">🔄</span> 重新生成
+                    </button>
+                    <button id="add-custom-participant-btn" class="btn-secondary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">+</span> 添加自定义参与者
+                    </button>
+                </div>
+                <div id="participants-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="col-span-full text-center text-gray-400 py-16">
+                        <div class="text-6xl mb-6">👥</div>
+                        <p class="text-lg">请先选择一个场景</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 讨论记录面板 -->
+            <div id="conversation-panel" class="p-8 hidden">
+                <div class="mb-8 flex flex-wrap gap-4 items-center">
+                    <button id="start-simulation-btn" class="btn-purple text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">🎬</span> 开始模拟讨论
+                    </button>
+                    <button id="reset-conversation-btn" class="btn-secondary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">🔄</span> 重置讨论
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <label class="text-gray-600 font-medium">对话长度：</label>
+                        <select id="conversation-length" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                            <option value="0">默认（按轮数）</option>
+                            <option value="20">20 条消息</option>
+                            <option value="30">30 条消息</option>
+                            <option value="40">40 条消息</option>
+                            <option value="50">50 条消息</option>
+                            <option value="60">60 条消息</option>
+                            <option value="80">80 条消息</option>
+                            <option value="100">100 条消息</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="conversation-container" class="bg-gray-50 rounded-2xl shadow-xl p-2">
+                    <!-- 聊天消息区域 -->
+                    <div id="conversation-messages" class="h-[500px] overflow-y-auto space-y-4 p-4 scrollbar-thin">
+                        <div class="text-center text-gray-400 py-12">
+                            <div class="text-6xl mb-4">💬</div>
+                            <p class="text-lg">请先选择场景并开始讨论</p>
+                        </div>
+                    </div>
+                    <!-- 用户输入区域 -->
+                    <div id="user-input-area" class="border-t border-gray-200 p-4 hidden">
+                        <div class="flex items-end gap-3">
+                            <div class="flex-1">
+                                <textarea id="user-message-input" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none" placeholder="输入您的发言..."></textarea>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button id="send-message-btn" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+                                    发送
+                                </button>
+                                <button id="end-conversation-btn" class="btn-warning text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all text-sm">
+                                    结束讨论
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分析报告面板 -->
+            <div id="report-panel" class="p-8 hidden">
+                <div class="mb-8">
+                    <button id="generate-report-btn" class="btn-purple text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">📊</span> 生成分析报告
+                    </button>
+                </div>
+                <div id="report-content">
+                    <div class="text-center text-gray-400 py-16">
+                        <div class="text-6xl mb-4">📊</div>
+                        <p class="text-lg">请先选择场景</p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- 新建场景模态框 -->
+    <div id="new-scenario-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-slide-up">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-2xl font-bold text-gray-800">新建讨论场景</h3>
+                <button class="text-gray-400 hover:text-gray-600 text-2xl transition-colors" onclick="closeNewScenarioModal()">×</button>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">产品名称</label>
+                    <input type="text" id="new-product-name" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="请输入产品名称">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">产品概念</label>
+                    <textarea id="new-product-concept" rows="3" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field resize-none" placeholder="请描述产品概念"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">核心卖点</label>
+                    <input type="text" id="new-selling-points" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="多个卖点用逗号分隔">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">讨论话题</label>
+                    <input type="text" id="new-topics" class="w-full px-5 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none input-field" placeholder="多个话题用逗号分隔">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">讨论人数</label>
+                    <input type="range" id="new-participant-count" min="2" max="8" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                    <div class="flex justify-between text-sm text-gray-500 mt-2">
+                        <span>2人</span>
+                        <span id="participant-count-display" class="font-bold text-blue-600">4人</span>
+                        <span>8人</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">场合类型</label>
+                    <div id="occasion-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="occasion-card border-2 rounded-xl p-5 cursor-pointer transition-all border-gray-100 bg-gray-50" onclick="selectOccasion('focus_group', this)">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">👥</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">焦点小组讨论</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">标准的焦点小组深度访谈</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <span class="text-xs px-3 py-1 bg-blue-100 text-blue-600 rounded-full badge">消费者</span>
+                            </div>
+                        </div>
+                        <div class="occasion-card border-2 rounded-xl p-5 cursor-pointer transition-all border-gray-100 bg-gray-50" onclick="selectOccasion('product_team', this)">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">💼</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">企业内部产品分析</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">产品团队内部讨论会</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <span class="text-xs px-3 py-1 bg-green-100 text-green-600 rounded-full badge">产品经理</span>
+                                <span class="text-xs px-3 py-1 bg-green-100 text-green-600 rounded-full badge">设计师</span>
+                            </div>
+                        </div>
+                        <div class="occasion-card border-2 rounded-xl p-5 cursor-pointer transition-all border-gray-100 bg-gray-50" onclick="selectOccasion('sales_conversation', this)">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">🤝</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">销售对话探测</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">模拟销售人员与客户对话</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <span class="text-xs px-3 py-1 bg-orange-100 text-orange-600 rounded-full badge">潜在客户</span>
+                            </div>
+                        </div>
+                        <div class="occasion-card border-2 rounded-xl p-5 cursor-pointer transition-all border-gray-100 bg-gray-50" onclick="selectOccasion('user_interview', this)">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">🎤</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">用户深度访谈</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">一对一深度用户访谈</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <span class="text-xs px-3 py-1 bg-purple-100 text-purple-600 rounded-full badge">目标用户</span>
+                            </div>
+                        </div>
+                        <div class="occasion-card border-2 rounded-xl p-5 cursor-pointer transition-all border-gray-100 bg-gray-50 md:col-span-2" onclick="selectOccasion('brainstorming', this)">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">💡</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">创意头脑风暴</h4>
+                                    <p class="text-sm text-gray-600 mt-0.5">开放式创意讨论，激发新想法</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <span class="text-xs px-3 py-1 bg-pink-100 text-pink-600 rounded-full badge">各类角色</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="hidden" id="selected-occasion-type" value="focus_group">
+            <input type="hidden" id="selected-occasion-desc" value="标准焦点小组讨论">
+            
+            <div class="flex justify-end gap-4 mt-10">
+                <button class="px-6 py-3 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-all" onclick="closeNewScenarioModal()">取消</button>
+                <button class="btn-primary text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all" onclick="createScenario()">创建场景</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast通知 -->
+    <div id="toast" class="fixed bottom-8 right-8 bg-gray-800 text-white px-6 py-4 rounded-xl shadow-xl opacity-0 transform translate-y-4 transition-all pointer-events-none z-50">
+        <div class="flex items-center gap-3">
+            <span id="toast-icon">📢</span>
+            <span id="toast-message">消息提示</span>
+        </div>
+    </div>
+
+    <!-- 加载遮罩（保留用于非对话操作） -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p id="loading-text" class="text-gray-600 font-medium">加载中...</p>
+        </div>
+    </div>
+
+    <!-- AI正在输入指示器 -->
+    <div id="typing-indicator" class="hidden fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl shadow-2xl border border-gray-100 px-6 py-4 z-40">
+        <div class="flex items-center gap-3">
+            <div class="flex gap-1">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0ms;"></span>
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 150ms;"></span>
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 300ms;"></span>
+            </div>
+            <span id="typing-text" class="text-gray-600 font-medium">AI正在思考...</span>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md animate-slide-up shadow-2xl">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <h3 id="delete-title" class="text-xl font-bold text-gray-800 mb-3">确认删除</h3>
+                <p id="delete-message" class="text-gray-600 mb-6">确定要删除吗？</p>
+                <div class="flex items-center justify-center mb-6">
+                    <input type="checkbox" id="delete-dont-ask" class="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500">
+                    <label for="delete-dont-ask" class="ml-2 text-sm text-gray-500">不再显示此提示</label>
+                </div>
+                <div class="flex gap-4">
+                    <button id="delete-cancel-btn" class="flex-1 px-6 py-3 border border-gray-200 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition-all">
+                        取消
+                    </button>
+                    <button id="delete-confirm-btn" class="flex-1 px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-all">
+                        确认删除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentScenarioId = null;
+        let currentUser = null;
+        let currentToken = null;
+
+        // 统一的 API 请求函数
+        async function apiFetch(url, options = {}) {
+            const defaultOptions = {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const mergedOptions = { ...defaultOptions, ...options };
+            if (mergedOptions.body && typeof mergedOptions.body === 'object') {
+                mergedOptions.body = JSON.stringify(mergedOptions.body);
+            }
+            return fetch(url, mergedOptions);
+        }
+
+        // 显示Toast通知
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icons = {
+                info: '📢',
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+            document.getElementById('toast-icon').textContent = icons[type] || icons.info;
+            document.getElementById('toast-message').textContent = message;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(4px)';
+            }, 3500);
+        }
+
+        // 显示加载遮罩
+        function showLoading(text = '加载中...') {
+            document.getElementById('loading-text').textContent = text;
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+
+        // 隐藏加载遮罩
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+
+        // 显示AI正在输入指示器
+        function showTyping(text = 'AI正在思考...') {
+            document.getElementById('typing-text').textContent = text;
+            document.getElementById('typing-indicator').classList.remove('hidden');
+        }
+
+        // 隐藏AI正在输入指示器
+        function hideTyping() {
+            document.getElementById('typing-indicator').classList.add('hidden');
+        }
+
+        // 认证相关
+        function openAuthModal() {
+            document.getElementById('auth-modal').style.display = 'flex';
+            showLogin();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('login-tab').classList.add('text-blue-600', 'border-blue-600');
+            document.getElementById('login-tab').classList.remove('text-gray-400');
+            document.getElementById('register-tab').classList.remove('text-blue-600', 'border-blue-600');
+            document.getElementById('register-tab').classList.add('text-gray-400');
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('register-tab').classList.add('text-blue-600', 'border-blue-600');
+            document.getElementById('register-tab').classList.remove('text-gray-400');
+            document.getElementById('login-tab').classList.remove('text-blue-600', 'border-blue-600');
+            document.getElementById('login-tab').classList.add('text-gray-400');
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+        }
+
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!username || !password) {
+                showToast('请填写用户名和密码', 'warning');
+                return;
+            }
+
+            showLoading('登录中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    body: { username, password }
+                });
+
+                hideLoading();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    updateUserUI();
+                    closeAuthModal();
+                    showToast('登录成功！', 'success');
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || '登录失败', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('登录失败:', error);
+                showToast('登录失败，请检查网络连接', 'error');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            if (!username || !email || !password) {
+                showToast('请填写完整信息', 'warning');
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('密码长度至少需要6位', 'warning');
+                return;
+            }
+
+            showLoading('注册中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    body: { username, email, password }
+                });
+
+                hideLoading();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    updateUserUI();
+                    closeAuthModal();
+                    showToast('注册成功！', 'success');
+                } else {
+                    const error = await response.json();
+                    showToast(error.error || '注册失败', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('注册失败:', error);
+                showToast('注册失败，请检查网络连接', 'error');
+            }
+        }
+
+        async function logout() {
+            showLoading('退出登录中...');
+
+            try {
+                await apiFetch(`${API_BASE}/logout`, {
+                    method: 'POST'
+                });
+            } catch (error) {
+                console.error('登出失败:', error);
+            }
+            
+            hideLoading();
+            currentUser = null;
+            updateUserUI();
+            showToast('已退出登录', 'info');
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await apiFetch(`${API_BASE}/user`, {
+                    method: 'GET'
+                });
+                if (response.ok) {
+                    currentUser = await response.json();
+                    updateUserUI();
+                }
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+            }
+        }
+
+        function updateUserUI() {
+            if (currentUser) {
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('login-prompt').style.display = 'none';
+                document.getElementById('user-name').textContent = currentUser.username;
+                document.getElementById('user-email').textContent = currentUser.email;
+            } else {
+                document.getElementById('user-info').style.display = 'none';
+                document.getElementById('login-prompt').style.display = 'block';
+            }
+        }
+
+        // 面板切换
+        function showPanel(panelName) {
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('[id$="-panel"]').forEach(p => {
+                p.style.display = 'none';
+                p.classList.remove('panel-transition');
+            });
+            
+            event.target.classList.add('active');
+            
+            const targetPanel = document.getElementById(`${panelName}-panel`);
+            setTimeout(() => {
+                targetPanel.style.display = 'block';
+                targetPanel.classList.add('panel-transition');
+            }, 50);
+            
+            const titles = {
+                scenarios: { title: '场景管理', subtitle: '管理您的焦点小组讨论场景' },
+                participants: { title: '参与者', subtitle: '管理讨论参与者' },
+                conversation: { title: '讨论记录', subtitle: '查看和管理讨论内容' },
+                report: { title: '分析报告', subtitle: '查看分析报告和产品建议' }
+            };
+            
+            document.getElementById('page-title').textContent = titles[panelName].title;
+            document.getElementById('page-subtitle').textContent = titles[panelName].subtitle;
+            
+            if (panelName === 'scenarios') loadScenarios();
+            else if (panelName === 'participants') loadParticipants();
+            else if (panelName === 'conversation') loadConversation();
+            else if (panelName === 'report') loadReport();
+        }
+
+        // 场景管理
+        function openNewScenarioModal() {
+            document.getElementById('new-scenario-modal').style.display = 'flex';
+            document.querySelectorAll('.occasion-card').forEach(c => c.classList.remove('border-blue-500', 'bg-blue-50'));
+            document.querySelector('.occasion-card').classList.add('border-blue-500', 'bg-blue-50');
+        }
+
+        function closeNewScenarioModal() {
+            document.getElementById('new-scenario-modal').style.display = 'none';
+        }
+
+        function selectOccasion(type, element) {
+            document.querySelectorAll('.occasion-card').forEach(c => c.classList.remove('border-blue-500', 'bg-blue-50'));
+            element.classList.add('border-blue-500', 'bg-blue-50');
+            
+            const occasionNames = {
+                focus_group: '焦点小组讨论',
+                product_team: '企业内部产品分析',
+                sales_conversation: '销售对话探测',
+                user_interview: '用户深度访谈',
+                brainstorming: '创意头脑风暴'
+            };
+            
+            document.getElementById('selected-occasion-type').value = type;
+            document.getElementById('selected-occasion-desc').value = occasionNames[type];
+        }
+
+        async function createScenario() {
+            // 检查用户是否登录
+            if (!currentUser) {
+                showToast('请先登录后再创建场景', 'warning');
+                closeNewScenarioModal();
+                openAuthModal();
+                return;
+            }
+
+            const productName = document.getElementById('new-product-name').value;
+            const productConcept = document.getElementById('new-product-concept').value;
+            const sellingPoints = document.getElementById('new-selling-points').value.split(',').map(s => s.trim()).filter(s => s);
+            const topics = document.getElementById('new-topics').value.split(',').map(s => s.trim()).filter(s => s);
+            const participantCount = parseInt(document.getElementById('new-participant-count').value);
+
+            if (!productName || !productConcept) {
+                showToast('请填写产品名称和概念', 'warning');
+                return;
+            }
+
+            if (sellingPoints.length === 0) {
+                showToast('请至少填写一个核心卖点', 'warning');
+                return;
+            }
+
+            if (topics.length === 0) {
+                showToast('请至少填写一个讨论话题', 'warning');
+                return;
+            }
+
+            const data = {
+                product_name: productName,
+                product_concept: productConcept,
+                core_selling_points: sellingPoints,
+                discussion_topics: topics,
+                occasion_type: document.getElementById('selected-occasion-type').value,
+                occasion_description: document.getElementById('selected-occasion-desc').value,
+                participant_count: participantCount
+            };
+
+            showLoading('创建场景中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios`, {
+                    method: 'POST',
+                    body: data
+                });
+
+                hideLoading();
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const scenarioId = result.id;
+                    showToast('场景创建成功！正在生成参与者...', 'success');
+                    
+                    // 自动生成参与者
+                    showLoading('AI正在生成参与者人设...');
+                    const participantResponse = await apiFetch(`${API_BASE}/scenarios/${scenarioId}/generate-participants`, {
+                        method: 'POST',
+                        body: { count: participantCount }
+                    });
+                    
+                    hideLoading();
+                    
+                    if (participantResponse.ok) {
+                        showToast(`已创建对话群聊，${participantCount}位参与者已就绪！`, 'success');
+                    }
+                    
+                    closeNewScenarioModal();
+                    document.getElementById('new-product-name').value = '';
+                    document.getElementById('new-product-concept').value = '';
+                    document.getElementById('new-selling-points').value = '';
+                    document.getElementById('new-topics').value = '';
+                    document.getElementById('new-participant-count').value = 4;
+                    document.getElementById('participant-count-display').textContent = '4人';
+                    loadScenarios();
+                } else {
+                    // 处理错误响应
+                    let errorMessage = '创建失败';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                        
+                        // 如果是未登录错误，打开登录窗口
+                        if (response.status === 401) {
+                            closeNewScenarioModal();
+                            openAuthModal();
+                        }
+                    } catch {
+                        // 如果JSON解析失败，使用默认错误信息
+                    }
+                    showToast(errorMessage, 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('创建场景失败:', error);
+                showToast('创建失败，请检查网络连接', 'error');
+            }
+        }
+
+        async function loadScenarios() {
+            showLoading('加载场景中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios`, { method: 'GET' });
+                const scenarios = await response.json();
+                const list = document.getElementById('scenarios-list');
+
+                hideLoading();
+
+                if (scenarios.length === 0) {
+                    list.innerHTML = '<div class="col-span-full text-center text-gray-400 py-16"><div class="text-6xl mb-6">📭</div><p class="text-lg">暂无场景，请创建新场景</p></div>';
+                    return;
+                }
+
+                list.innerHTML = scenarios.map((s, index) => `
+                    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer scenario-card list-item ${currentScenarioId === s.id ? 'ring-2 ring-blue-500 scale-105' : ''}" data-scenario-id="${s.id}" onclick="selectScenario(${s.id})" style="animation-delay: ${index * 0.05}s;">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-bold text-gray-800 text-lg">${s.product_name}</h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs px-3 py-1 bg-blue-100 text-blue-600 rounded-full badge">ID:${s.id}</span>
+                                <button onclick="event.stopPropagation(); deleteScenario(${s.id})" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-all" title="删除场景">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">${s.product_concept}</p>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-xs text-indigo-600">📋</span>
+                            <span class="text-xs text-gray-500">${s.occasion_description}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${s.core_selling_points.map(p => `<span class="text-xs px-3 py-1 bg-gray-100 text-gray-600 rounded-full badge">${p}</span>`).join('')}
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4">创建于 ${new Date(s.created_at).toLocaleDateString('zh-CN')}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                hideLoading();
+                console.error('加载场景失败:', error);
+                showToast('加载场景失败', 'error');
+            }
+        }
+
+        function selectScenario(id) {
+            // 移除之前选中的样式
+            document.querySelectorAll('.scenario-card').forEach(card => {
+                card.classList.remove('ring-2', 'ring-blue-500', 'scale-105');
+            });
+            
+            // 设置新选中的样式
+            const selectedCard = document.querySelector(`[data-scenario-id="${id}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('ring-2', 'ring-blue-500', 'scale-105');
+            }
+            
+            currentScenarioId = id;
+            showToast(`已选择场景 #${id}`, 'info');
+            
+            // 刷新其他面板
+            if (document.getElementById('participants-panel').style.display === 'block') {
+                loadParticipants();
+            }
+            if (document.getElementById('conversation-panel').style.display === 'block') {
+                loadConversation();
+            }
+            if (document.getElementById('report-panel').style.display === 'block') {
+                loadReport();
+            }
+        }
+
+        // 参与者管理
+        async function loadParticipants() {
+            if (!currentScenarioId) {
+                document.getElementById('participants-list').innerHTML = '<div class="col-span-full text-center text-gray-400 py-16"><div class="text-6xl mb-6">👥</div><p class="text-lg">请先选择一个场景</p></div>';
+                return;
+            }
+
+            showLoading('加载参与者中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/participants`, { method: 'GET' });
+                const participants = await response.json();
+                const list = document.getElementById('participants-list');
+
+                hideLoading();
+
+                if (participants.length === 0) {
+                    list.innerHTML = '<div class="col-span-full text-center text-gray-400 py-16"><div class="text-6xl mb-6">👥</div><p class="text-lg">暂无参与者，请生成或添加</p></div>';
+                    return;
+                }
+
+                list.innerHTML = participants.map(p => `
+                    <div class="bg-white rounded-2xl p-6 shadow-lg card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-gray-800 text-lg">${p.persona_name}</h4>
+                            <div class="flex items-center gap-2">
+                                ${p.is_ai_generated ? '<span class="text-xs px-3 py-1 bg-green-100 text-green-600 rounded-full badge">AI生成</span>' : '<span class="text-xs px-3 py-1 bg-gray-100 text-gray-600 rounded-full badge">自定义</span>'}
+                                <button onclick="deleteParticipant(${p.id})" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-all" title="删除">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${p.persona_tags.map(t => `<span class="text-xs px-3 py-1 bg-blue-100 text-blue-600 rounded-full badge">${t}</span>`).join('')}
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-start">
+                                <span class="text-gray-400 mr-2">🎭</span>
+                                <span class="text-sm text-gray-600"><strong>性格:</strong> ${p.personality}</span>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-400 mr-2">📝</span>
+                                <span class="text-sm text-gray-500"><strong>背景:</strong> ${p.background}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                hideLoading();
+                console.error('加载参与者失败:', error);
+                showToast('加载参与者失败', 'error');
+            }
+        }
+
+        async function generateParticipants(regenerate = false) {
+            if (!currentScenarioId) {
+                showToast('请先选择场景', 'warning');
+                return;
+            }
+
+            const participantCount = parseInt(document.getElementById('new-participant-count')?.value || 4);
+
+            if (regenerate && !confirm('重新生成会删除现有的参与者，确定要继续吗？')) {
+                return;
+            }
+
+            const btn = regenerate ? document.getElementById('regenerate-participants-btn') : document.getElementById('generate-participants-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="text-lg">⏳</span> 生成中...';
+            showTyping(regenerate ? 'AI正在重新生成参与者...' : 'AI正在生成参与者...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/generate-participants`, {
+                    method: 'POST',
+                    body: { count: participantCount, regenerate: regenerate }
+                });
+
+                hideTyping();
+                btn.disabled = false;
+                btn.innerHTML = regenerate ? '<span class="text-lg">🔄</span> 重新生成' : '<span class="text-lg">✨</span> 生成AI参与者';
+
+                if (response.ok) {
+                    showToast(regenerate ? '参与者重新生成成功！' : '人设生成成功！', 'success');
+                    loadParticipants();
+                } else {
+                    showToast('生成失败', 'error');
+                }
+            } catch (error) {
+                hideTyping();
+                btn.disabled = false;
+                btn.innerHTML = regenerate ? '<span class="text-lg">🔄</span> 重新生成' : '<span class="text-lg">✨</span> 生成AI参与者';
+                console.error('生成人设失败:', error);
+                showToast('生成人设失败', 'error');
+            }
+        }
+
+        async function deleteParticipant(participantId) {
+            if (!confirm('确定要删除这个参与者吗？')) return;
+
+            showLoading('删除参与者中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/participants/${participantId}`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (response.ok) {
+                    showToast('参与者已删除', 'success');
+                    loadParticipants();
+                } else {
+                    showToast('删除失败', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('删除参与者失败:', error);
+                showToast('删除参与者失败', 'error');
+            }
+        }
+
+        let deleteCallback = null;
+
+        function openDeleteConfirmModal(title, message, callback) {
+            document.getElementById('delete-title').textContent = title;
+            document.getElementById('delete-message').textContent = message;
+            document.getElementById('delete-dont-ask').checked = false;
+            deleteCallback = callback;
+            document.getElementById('delete-confirm-modal').style.display = 'flex';
+        }
+
+        function closeDeleteConfirmModal() {
+            document.getElementById('delete-confirm-modal').style.display = 'none';
+            deleteCallback = null;
+        }
+
+        document.getElementById('delete-cancel-btn').addEventListener('click', closeDeleteConfirmModal);
+
+        document.getElementById('delete-confirm-btn').addEventListener('click', async () => {
+            const dontAsk = document.getElementById('delete-dont-ask').checked;
+            if (dontAsk) {
+                localStorage.setItem('deleteConfirmDisabled', 'true');
+            }
+            closeDeleteConfirmModal();
+            if (deleteCallback) {
+                await deleteCallback();
+            }
+        });
+
+        async function deleteScenario(scenarioId) {
+            const confirmDisabled = localStorage.getItem('deleteConfirmDisabled') === 'true';
+            
+            if (confirmDisabled) {
+                await doDeleteScenario(scenarioId);
+            } else {
+                openDeleteConfirmModal('确认删除场景', 
+                    '确定要删除这个场景吗？这将删除该场景下的所有参与者、对话记录和分析报告！',
+                    () => doDeleteScenario(scenarioId)
+                );
+            }
+        }
+
+        async function doDeleteScenario(scenarioId) {
+            showLoading('删除场景中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${scenarioId}`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (response.ok) {
+                    showToast('场景已删除', 'success');
+                    if (currentScenarioId === scenarioId) {
+                        currentScenarioId = null;
+                    }
+                    loadScenarios();
+                } else {
+                    showToast('删除失败', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('删除场景失败:', error);
+                showToast('删除场景失败', 'error');
+            }
+        }
+
+        // 讨论管理
+        async function loadConversation() {
+            if (!currentScenarioId) {
+                document.getElementById('conversation-messages').innerHTML = '<div class="text-center text-gray-400 py-12"><div class="text-6xl mb-4">💬</div><p class="text-lg">请先选择场景</p></div>';
+                document.getElementById('user-input-area').style.display = 'none';
+                return;
+            }
+
+            showLoading('加载讨论记录中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/conversation`, { method: 'GET' });
+                const messages = await response.json();
+                const container = document.getElementById('conversation-messages');
+
+                hideLoading();
+
+                if (messages.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-12"><div class="text-6xl mb-4">💬</div><p class="text-lg">暂无讨论记录，请开始模拟</p></div>';
+                    document.getElementById('user-input-area').style.display = 'none';
+                    return;
+                }
+
+                // 检查是否有用户消息（模拟完成后用户可参与）
+                const hasMessages = messages.length > 0;
+                
+                container.innerHTML = messages.map(m => {
+                    const isUser = m.participant_name === '我';
+                    const avatarType = m.is_host ? 'host' : (isUser ? 'user' : 'participant');
+                    const bubbleType = m.is_host ? 'host' : (isUser ? 'user' : 'participant');
+                    const name = m.is_host ? 'AI主持人' : (isUser ? '我' : m.participant_name);
+                    const avatarEmoji = m.is_host ? '🎙️' : (isUser ? '👤' : '👥');
+                    
+                    return `
+                        <div class="message-container ${isUser ? 'user' : ''}">
+                            <div class="message-avatar ${avatarType}">${avatarEmoji}</div>
+                            <div class="message-bubble ${bubbleType}">
+                                <div class="message-header">
+                                    <span class="message-name">${name}</span>
+                                    <span class="message-time">${new Date(m.timestamp).toLocaleTimeString('zh-CN')}</span>
+                                </div>
+                                <div class="message-content">${m.content}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.scrollTop = container.scrollHeight;
+                
+                // 如果有讨论记录，显示用户输入区域（允许用户参与对话）
+                document.getElementById('user-input-area').style.display = 'block';
+            } catch (error) {
+                hideLoading();
+                console.error('加载讨论记录失败:', error);
+                showToast('加载讨论记录失败', 'error');
+            }
+        }
+
+        async function startSimulation() {
+            if (!currentScenarioId) {
+                showToast('请先选择场景', 'warning');
+                return;
+            }
+
+            const messageCount = parseInt(document.getElementById('conversation-length')?.value || '0');
+
+            document.getElementById('start-simulation-btn').disabled = true;
+            document.getElementById('start-simulation-btn').innerHTML = '<span class="text-lg">⏳</span> 模拟进行中...';
+            showTyping('AI正在模拟讨论...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/simulate`, {
+                    method: 'POST',
+                    body: { rounds: 2, message_count: messageCount }
+                });
+
+                hideTyping();
+                document.getElementById('start-simulation-btn').disabled = false;
+                document.getElementById('start-simulation-btn').innerHTML = '<span class="text-lg">🎬</span> 开始模拟讨论';
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showToast(`讨论模拟完成！共${result.total_messages}条消息`, 'success');
+                    loadConversation();
+                } else {
+                    showToast('模拟失败', 'error');
+                }
+            } catch (error) {
+                hideTyping();
+                document.getElementById('start-simulation-btn').disabled = false;
+                document.getElementById('start-simulation-btn').innerHTML = '<span class="text-lg">🎬</span> 开始模拟讨论';
+                console.error('模拟失败:', error);
+                showToast('模拟失败', 'error');
+            }
+        }
+
+        async function sendMessage() {
+            const content = document.getElementById('user-message-input').value.trim();
+            if (!content || !currentScenarioId) {
+                return;
+            }
+
+            document.getElementById('send-message-btn').disabled = true;
+            document.getElementById('send-message-btn').textContent = '发送中...';
+            showTyping('AI正在思考...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/conversation`, {
+                    method: 'POST',
+                    body: { content: content, participant_name: '我' }
+                });
+
+                hideTyping();
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('user-message-input').value = '';
+                    document.getElementById('send-message-btn').disabled = false;
+                    document.getElementById('send-message-btn').textContent = '发送';
+                    if (result.ai_responses > 0) {
+                        showTyping(`${result.ai_responses}位AI正在回应...`);
+                        setTimeout(() => {
+                            hideTyping();
+                            loadConversation();
+                        }, 1000);
+                    } else {
+                        loadConversation();
+                    }
+                } else {
+                    showToast('发送失败', 'error');
+                    document.getElementById('send-message-btn').disabled = false;
+                    document.getElementById('send-message-btn').textContent = '发送';
+                }
+            } catch (error) {
+                hideTyping();
+                console.error('发送消息失败:', error);
+                showToast('发送消息失败', 'error');
+                document.getElementById('send-message-btn').disabled = false;
+                document.getElementById('send-message-btn').textContent = '发送';
+            }
+        }
+
+        async function resetConversation() {
+            if (!currentScenarioId) {
+                showToast('请先选择场景', 'warning');
+                return;
+            }
+
+            if (!confirm('确定要重置讨论记录吗？所有消息将被清空。')) {
+                return;
+            }
+
+            showLoading('重置讨论中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/conversation`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (response.ok) {
+                    showToast('讨论已重置！', 'success');
+                    loadConversation();
+                } else {
+                    showToast('重置失败', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('重置失败:', error);
+                showToast('重置失败', 'error');
+            }
+        }
+
+        // 报告管理
+        async function loadReport() {
+            if (!currentScenarioId) {
+                document.getElementById('report-content').innerHTML = '<div class="text-center text-gray-400 py-16"><div class="text-6xl mb-4">📊</div><p class="text-lg">请先选择场景</p></div>';
+                return;
+            }
+
+            showLoading('加载报告中...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/report`, { method: 'GET' });
+                
+                hideLoading();
+
+                if (response.status === 404) {
+                    document.getElementById('report-content').innerHTML = '<div class="text-center text-gray-400 py-16"><div class="text-6xl mb-4">📊</div><p class="text-lg">暂无报告，请先生成</p></div>';
+                    return;
+                }
+
+                const report = await response.json();
+                
+                const content = report.content || '';
+                const formattedContent = content.replace(/\n/g, '<br>');
+                
+                document.getElementById('report-content').innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 shadow-lg card">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">${report.report_title || '分析报告'}</h3>
+                        <div class="prose prose-gray max-w-none">
+                            <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">${formattedContent}</div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-500">
+                            报告生成时间：${report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知'}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                hideLoading();
+                console.error('加载报告失败:', error);
+                showToast('加载报告失败', 'error');
+            }
+        }
+
+        async function generateReport() {
+            if (!currentScenarioId) {
+                showToast('请先选择场景', 'warning');
+                return;
+            }
+
+            document.getElementById('generate-report-btn').disabled = true;
+            document.getElementById('generate-report-btn').innerHTML = '<span class="text-lg">⏳</span> 生成中...';
+            showTyping('AI正在分析生成报告...');
+
+            try {
+                const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/generate-report`, {
+                    method: 'POST'
+                });
+
+                hideTyping();
+                document.getElementById('generate-report-btn').disabled = false;
+                document.getElementById('generate-report-btn').innerHTML = '<span class="text-lg">📊</span> 生成分析报告';
+
+                if (response.ok) {
+                    showToast('报告生成成功！正在跳转...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/report?scenario_id=${currentScenarioId}`;
+                    }, 1000);
+                } else {
+                    showToast('生成失败', 'error');
+                }
+            } catch (error) {
+                hideTyping();
+                document.getElementById('generate-report-btn').disabled = false;
+                document.getElementById('generate-report-btn').innerHTML = '<span class="text-lg">📊</span> 生成分析报告';
+                console.error('生成报告失败:', error);
+                showToast('生成报告失败', 'error');
+            }
+        }
+
+        // 事件绑定
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadScenarios();
+            
+            document.getElementById('new-scenario-btn').addEventListener('click', openNewScenarioModal);
+            document.getElementById('generate-participants-btn').addEventListener('click', () => generateParticipants(false));
+            document.getElementById('regenerate-participants-btn').addEventListener('click', () => generateParticipants(true));
+            document.getElementById('start-simulation-btn').addEventListener('click', startSimulation);
+            document.getElementById('generate-report-btn').addEventListener('click', generateReport);
+            
+            // 讨论人数滑块监听
+            const participantSlider = document.getElementById('new-participant-count');
+            const participantDisplay = document.getElementById('participant-count-display');
+            if (participantSlider && participantDisplay) {
+                participantSlider.addEventListener('input', (e) => {
+                    participantDisplay.textContent = `${e.target.value}人`;
+                });
+            }
+            
+            // 用户消息发送
+            document.getElementById('send-message-btn').addEventListener('click', sendMessage);
+            
+            // 回车键发送消息
+            document.getElementById('user-message-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // 重置讨论
+            document.getElementById('reset-conversation-btn').addEventListener('click', resetConversation);
+        });
+    </script>
+</body>
+</html>

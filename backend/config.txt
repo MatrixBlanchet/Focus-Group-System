@@ -1,0 +1,6 @@
+DEEPSEEK_API_KEY=sk-ddfba6f4e1264d89911b946ced3d66a7
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+MODEL=deepseek-chat
+MAX_TOKENS=4096
+TEMPERATURE=0.7
+P=0.95
