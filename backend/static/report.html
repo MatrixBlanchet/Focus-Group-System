@@ -7,648 +7,911 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&display=swap');
+
+        :root {
+            --surface: rgba(255, 255, 255, 0.94);
+            --surface-strong: rgba(255, 255, 255, 0.98);
+            --border-soft: rgba(148, 163, 184, 0.18);
+            --text-strong: #0f172a;
+            --text-muted: #64748b;
+            --brand: #2563eb;
+            --brand-strong: #1d4ed8;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.12);
+        }
+
         * {
+            box-sizing: border-box;
             font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            color: var(--text-strong);
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.16), transparent 30%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 28%),
+                linear-gradient(135deg, #f8fafc 0%, #eef4ff 50%, #f8fafc 100%);
         }
-        
-        .page-header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 2rem;
+
+        .app-shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 20px 24px;
+            border-radius: 24px;
+            border: 1px solid var(--border-soft);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-soft);
         }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .header-logo {
-            font-size: 1.5rem;
-        }
-        
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        
-        .header-right {
-            display: flex;
-            gap: 0.75rem;
-        }
-        
-        .btn {
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.75rem;
-            font-weight: 500;
+
+        .brand-mark {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
+            justify-content: center;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 18px 40px rgba(37, 99, 235, 0.28);
+        }
+
+        .btn {
             border: none;
-            transition: all 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
         }
-        
-        .btn-back {
-            background: #6b7280;
-            color: white;
-        }
-        
-        .btn-back:hover {
-            background: #4b5563;
-        }
-        
-        .btn-print {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .btn-print:hover {
-            background: #2563eb;
-        }
-        
-        .btn-pdf {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-pdf:hover {
-            opacity: 0.9;
+
+        .btn:hover {
             transform: translateY(-1px);
         }
-        
-        .main-content {
-            padding: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
+
+        .btn-secondary {
+            background: rgba(15, 23, 42, 0.06);
+            color: var(--text-strong);
         }
-        
-        .report-card {
-            background: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
-        }
-        
-        .report-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
             color: white;
-            padding: 2rem;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.24);
         }
-        
-        .report-header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 0 0 0.5rem 0;
+
+        .btn-accent {
+            background: linear-gradient(135deg, #0f766e, #059669);
+            color: white;
+            box-shadow: 0 12px 30px rgba(5, 150, 105, 0.22);
         }
-        
-        .report-meta {
-            font-size: 0.875rem;
-            opacity: 0.9;
+
+        .report-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 20px;
         }
-        
-        .report-body {
-            padding: 2rem;
+
+        .hero-card {
+            padding: 28px;
+            border-radius: 28px;
+            color: white;
+            background:
+                linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(99, 102, 241, 0.96)),
+                radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 30%);
+            box-shadow: var(--shadow-soft);
         }
-        
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .hero-metric {
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.14);
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .hero-metric .label {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            opacity: 0.76;
+        }
+
+        .hero-metric .value {
+            margin-top: 6px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        .panel {
+            border-radius: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(16px);
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .summary-card {
+            background: var(--surface-strong);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .summary-card h3 {
+            margin: 8px 0 0;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .eyebrow.primary { color: var(--brand-strong); }
+        .eyebrow.warning { color: var(--warning); }
+        .eyebrow.danger { color: var(--danger); }
+        .eyebrow.success { color: var(--success); }
+
+        .action-list,
+        .evidence-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .action-item,
+        .evidence-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+        }
+
+        .priority-badge {
+            min-width: 64px;
+            text-align: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .priority-high {
+            background: rgba(220, 38, 38, 0.12);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background: rgba(217, 119, 6, 0.12);
+            color: var(--warning);
+        }
+
+        .priority-low {
+            background: rgba(5, 150, 105, 0.12);
+            color: var(--success);
+        }
+
         .report-content {
-            line-height: 1.8;
-            color: #374151;
+            line-height: 1.85;
+            color: #334155;
         }
-        
-        .report-content h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin: 2rem 0 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e5e7eb;
+
+        .report-content section {
+            padding: 22px 0;
+            border-top: 1px solid rgba(148, 163, 184, 0.16);
         }
-        
+
+        .report-content section:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
         .report-content h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #374151;
-            margin: 1.5rem 0 0.75rem;
+            margin: 0 0 12px;
+            font-size: 24px;
+            color: var(--text-strong);
         }
-        
-        .report-content h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #4b5563;
-            margin: 1.25rem 0 0.5rem;
-        }
-        
+
         .report-content p {
-            margin: 0.75rem 0;
-            color: #4b5563;
+            margin: 10px 0;
         }
-        
-        .report-content ul, .report-content ol {
-            margin: 0.75rem 0;
-            padding-left: 1.5rem;
+
+        .report-content ul,
+        .report-content ol {
+            margin: 10px 0;
+            padding-left: 22px;
         }
-        
+
         .report-content li {
-            margin: 0.5rem 0;
-            color: #4b5563;
+            margin: 8px 0;
         }
-        
+
         .report-content table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1.5rem 0;
-            font-size: 0.9rem;
-            border-radius: 0.5rem;
+            margin: 16px 0;
+            border-radius: 14px;
             overflow: hidden;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(148, 163, 184, 0.2);
         }
-        
-        .report-content th {
-            background: #f3f4f6;
-            padding: 0.875rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #374151;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
+
+        .report-content th,
         .report-content td {
-            padding: 0.875rem 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            color: #4b5563;
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.16);
         }
-        
+
+        .report-content th {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--text-strong);
+        }
+
         .report-content tr:last-child td {
             border-bottom: none;
         }
-        
-        .report-content tr:nth-child(even) {
-            background: #f9fafb;
+
+        .side-panel {
+            display: grid;
+            gap: 20px;
         }
-        
-        .report-content strong, .report-content b {
+
+        .nav-chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .nav-chip {
+            border-radius: 999px;
+            padding: 8px 12px;
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--brand-strong);
+            font-size: 13px;
             font-weight: 700;
-            color: #1f2937;
         }
-        
-        .report-content hr {
-            border: none;
-            border-top: 2px solid #e5e7eb;
-            margin: 2rem 0;
-        }
-        
-        .report-content blockquote {
-            border-left: 4px solid #667eea;
-            padding: 1rem 1.5rem;
-            margin: 1.5rem 0;
-            background: #f3f4f6;
-            border-radius: 0 0.5rem 0.5rem 0;
-            color: #4b5563;
-            font-style: italic;
-        }
-        
-        .loading-container {
+
+        .loading-state,
+        .error-state,
+        .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 56px 22px;
         }
-        
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+
+        .spinner {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 16px;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
+            border: 4px solid rgba(148, 163, 184, 0.2);
+            border-top-color: var(--brand);
             animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
         }
-        
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 999;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.92);
+            color: white;
+            border-radius: 14px;
+            padding: 14px 18px;
+            box-shadow: var(--shadow-soft);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        
-        .error-container {
-            text-align: center;
-            padding: 4rem 2rem;
+
+        @media (min-width: 1100px) {
+            .main-grid {
+                grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.8fr);
+                align-items: start;
+            }
+
+            .side-panel {
+                position: sticky;
+                top: 24px;
+            }
         }
-        
-        .error-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+
+        @media (max-width: 768px) {
+            .app-shell {
+                padding: 16px;
+            }
+
+            .topbar {
+                padding: 18px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .summary-grid,
+            .hero-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-row {
+                display: grid;
+                gap: 10px;
+            }
         }
-        
-        .error-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-        
-        .error-message {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-        
+
         @media print {
             body {
                 background: white;
             }
-            .page-header {
-                display: none;
+
+            .topbar,
+            .side-panel,
+            .toast {
+                display: none !important;
             }
-            .main-content {
-                padding: 0;
+
+            .app-shell {
                 max-width: none;
+                padding: 0;
             }
-            .report-card {
+
+            .panel,
+            .hero-card {
                 box-shadow: none;
+                border: none;
+                background: white;
+            }
+
+            .report-content section {
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body>
-    <header class="page-header">
-        <div class="header-left">
-            <span class="header-logo">📊</span>
-            <span class="header-title">分析报告</span>
-        </div>
-        <div class="header-right">
-            <button id="back-btn" class="btn btn-back">
-                <i class="fas fa-arrow-left"></i>
-                返回
-            </button>
-            <button id="print-btn" class="btn btn-print">
-                <i class="fas fa-print"></i>
-                打印
-            </button>
-            <button id="export-pdf-btn" class="btn btn-pdf">
-                <i class="fas fa-file-pdf"></i>
-                导出 PDF
-            </button>
-        </div>
-    </header>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="flex items-center gap-4">
+                <div class="brand-mark">📊</div>
+                <div>
+                    <div class="text-sm font-bold uppercase tracking-[0.22em] text-slate-500">Decision Report</div>
+                    <h1 class="text-2xl font-extrabold text-slate-900 m-0">企业决策分析报告</h1>
+                    <p class="text-sm text-slate-500 mt-1" id="topbar-meta">正在读取报告内容...</p>
+                </div>
+            </div>
+            <div class="btn-row flex flex-wrap gap-3">
+                <button id="back-btn" class="btn btn-secondary"><i class="fas fa-arrow-left"></i>返回首页</button>
+                <button id="print-btn" class="btn btn-secondary"><i class="fas fa-print"></i>打印</button>
+                <button id="export-pdf-btn" class="btn btn-primary"><i class="fas fa-file-pdf"></i>导出 PDF</button>
+            </div>
+        </header>
 
-    <main class="main-content">
-        <div class="report-card">
-            <div class="report-header">
-                <h1 id="report-title">加载中...</h1>
-                <p id="report-meta" class="report-meta">正在获取报告信息...</p>
-            </div>
-            
-            <div class="report-body">
-                <div id="loading-indicator" class="loading-container">
-                    <div class="loading-spinner"></div>
-                    <p id="loading-text" style="color: #6b7280;">正在加载报告内容...</p>
+        <div class="report-shell">
+            <section class="hero-card">
+                <div class="eyebrow primary">Executive Summary</div>
+                <h2 id="report-title" class="text-4xl font-extrabold mt-3 mb-3">加载中...</h2>
+                <p id="hero-summary" class="text-white/85 text-sm leading-7 max-w-3xl">系统将把现有报告内容重组为结论、洞察、风险、建议动作和证据，帮助企业更快做判断。</p>
+                <div class="hero-metrics">
+                    <div class="hero-metric">
+                        <div class="label">报告状态</div>
+                        <div class="value" id="metric-status">加载中</div>
+                    </div>
+                    <div class="hero-metric">
+                        <div class="label">生成时间</div>
+                        <div class="value" id="metric-generated-at">--</div>
+                    </div>
+                    <div class="hero-metric">
+                        <div class="label">优先动作</div>
+                        <div class="value" id="metric-priority">待解析</div>
+                    </div>
+                    <div class="hero-metric">
+                        <div class="label">证据条数</div>
+                        <div class="value" id="metric-evidence-count">0</div>
+                    </div>
                 </div>
-                
-                <div id="report-content" class="report-content" style="display: none;"></div>
-                
-                <div id="error-container" class="error-container" style="display: none;">
-                    <div class="error-icon">😔</div>
-                    <h2 class="error-title">加载失败</h2>
-                    <p id="error-message" class="error-message">无法加载报告</p>
-                    <button id="retry-btn" class="btn btn-print">
-                        <i class="fas fa-redo"></i>
-                        重试
-                    </button>
-                </div>
+            </section>
+
+            <div class="main-grid">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div id="loading-indicator" class="loading-state">
+                            <div class="spinner"></div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">正在构建决策视图</h3>
+                            <p id="loading-text" class="text-slate-500">正在加载报告内容...</p>
+                        </div>
+
+                        <div id="error-container" class="error-state hidden">
+                            <div class="text-5xl mb-4">😕</div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">加载失败</h3>
+                            <p id="error-message" class="text-slate-500 mb-5">暂时无法获取报告</p>
+                            <button id="retry-btn" class="btn btn-primary"><i class="fas fa-rotate-right"></i>重试</button>
+                        </div>
+
+                        <div id="report-view" class="hidden">
+                            <div class="summary-grid" id="summary-grid"></div>
+                            <div class="action-list" id="action-list"></div>
+                            <div class="report-content mt-8" id="report-content"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="side-panel">
+                    <section class="panel">
+                        <div class="panel-body">
+                            <div class="eyebrow success">建议动作</div>
+                            <h3 class="text-xl font-bold mt-3 mb-2">下一步优先做什么</h3>
+                            <div id="priority-actions" class="action-list"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-body">
+                            <div class="eyebrow warning">证据引用</div>
+                            <h3 class="text-xl font-bold mt-3 mb-2">支撑判断的原始片段</h3>
+                            <div id="evidence-list" class="evidence-list"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-body">
+                            <div class="eyebrow primary">章节导航</div>
+                            <h3 class="text-xl font-bold mt-3 mb-2">报告结构</h3>
+                            <div class="nav-chip-list" id="section-nav"></div>
+                        </div>
+                    </section>
+                </aside>
             </div>
         </div>
-    </main>
+    </div>
+
+    <div id="toast" class="toast">
+        <span id="toast-icon">ℹ️</span>
+        <span id="toast-message">提示</span>
+    </div>
 
     <script>
         const API_BASE = '/api';
-        
-        // 显示Toast通知
+
         function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-message');
             const icons = {
-                info: '📢',
+                info: 'ℹ️',
                 success: '✅',
-                error: '❌',
-                warning: '⚠️'
+                warning: '⚠️',
+                error: '❌'
             };
-            
-            // 创建Toast元素
-            let toast = document.getElementById('toast-notification');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'toast-notification';
-                toast.style.cssText = 'position: fixed; bottom: 32px; right: 32px; background: rgba(31, 41, 55, 0.95); color: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); z-index: 9999; display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(16px); transition: all 0.3s ease;';
-                document.body.appendChild(toast);
-            }
-            
-            // 设置内容
-            toast.innerHTML = `
-                <span style="font-size: 20px;">${icons[type] || icons.info}</span>
-                <span style="font-weight: 500;">${message}</span>
-            `;
-            
-            // 显示
-            toast.style.opacity = '1';
-            toast.style.transform = 'translateY(0)';
-            
-            // 3.5秒后隐藏
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(4px)';
-            }, 3500);
+
+            icon.textContent = icons[type] || icons.info;
+            text.textContent = message;
+            toast.classList.add('show');
+            window.clearTimeout(showToast.timer);
+            showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 3200);
         }
-        
+
         function getScenarioIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return params.get('scenario_id');
         }
-        
+
+        function escapeHtml(value = '') {
+            return value
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function setViewState(state) {
+            document.getElementById('loading-indicator').classList.toggle('hidden', state !== 'loading');
+            document.getElementById('error-container').classList.toggle('hidden', state !== 'error');
+            document.getElementById('report-view').classList.toggle('hidden', state !== 'ready');
+        }
+
+        function isHeading(line) {
+            return /^#{1,6}\s+/.test(line);
+        }
+
+        function headingTitle(line) {
+            return line.replace(/^#{1,6}\s+/, '').trim();
+        }
+
+        function parseSections(content) {
+            const lines = content.split(/\r?\n/);
+            const sections = [];
+            let current = { title: '报告正文', lines: [] };
+
+            for (const rawLine of lines) {
+                const line = rawLine.trim();
+                if (!line) {
+                    current.lines.push('');
+                    continue;
+                }
+
+                if (isHeading(line)) {
+                    if (current.lines.some(item => item.trim())) {
+                        sections.push(current);
+                    }
+                    current = { title: headingTitle(line), lines: [] };
+                    continue;
+                }
+
+                current.lines.push(line);
+            }
+
+            if (current.lines.some(item => item.trim())) {
+                sections.push(current);
+            }
+
+            return sections;
+        }
+
+        function extractBulletLines(lines) {
+            return lines
+                .map(line => line.trim())
+                .filter(line => /^[-*]\s+/.test(line) || /^\d+\.\s+/.test(line))
+                .map(line => line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '').trim());
+        }
+
+        function findSection(sections, keywords) {
+            return sections.find(section => keywords.some(keyword => section.title.includes(keyword)));
+        }
+
+        function firstMeaningfulLines(lines, count = 2) {
+            return lines.filter(line => line && !/^[-*]\s+/.test(line)).slice(0, count);
+        }
+
+        function inferDecisionModel(content) {
+            const sections = parseSections(content);
+            const insightSection = findSection(sections, ['洞察', '需求', '用户']);
+            const strategySection = findSection(sections, ['建议', '定位', '总结', '行动']);
+            const analysisSection = findSection(sections, ['优劣势', '风险', '分析']);
+            const summarySection = findSection(sections, ['总结', '结论']) || sections[0];
+
+            const summaryText = firstMeaningfulLines(summarySection?.lines || content.split(/\r?\n/), 2).join(' ');
+            const insights = extractBulletLines(insightSection?.lines || []).slice(0, 3);
+            const actions = extractBulletLines(strategySection?.lines || []).slice(0, 4);
+            const riskCandidates = (analysisSection?.lines || []).filter(line => /风险|问题|劣势|顾虑|挑战/.test(line));
+            const risks = (extractBulletLines(riskCandidates).length ? extractBulletLines(riskCandidates) : riskCandidates).slice(0, 3);
+            const evidence = sections.flatMap(section => section.lines.filter(line => line.length >= 18)).slice(0, 4);
+
+            return {
+                sections,
+                summaryText: summaryText || '报告已生成，可查看详细分析内容。',
+                insights: insights.length ? insights : ['需要进一步结合讨论内容确认核心需求亮点。'],
+                risks: risks.length ? risks : ['现有报告中未明确列出风险点，建议重点核查优劣势与执行阻力。'],
+                actions: actions.length ? actions : ['结合市场定位建议，优先定义下一轮验证动作和负责人。'],
+                evidence
+            };
+        }
+
+        function priorityLabel(index) {
+            if (index === 0) return { label: '高优先级', className: 'priority-badge priority-high' };
+            if (index === 1) return { label: '中优先级', className: 'priority-badge priority-medium' };
+            return { label: '可跟进', className: 'priority-badge priority-low' };
+        }
+
+        function renderSummary(model) {
+            const summaryGrid = document.getElementById('summary-grid');
+            summaryGrid.innerHTML = `
+                <article class="summary-card">
+                    <div class="eyebrow primary">结论摘要</div>
+                    <h3>${escapeHtml(model.summaryText)}</h3>
+                </article>
+                <article class="summary-card">
+                    <div class="eyebrow warning">核心洞察</div>
+                    <h3>${escapeHtml(model.insights[0] || '等待解析')}</h3>
+                </article>
+                <article class="summary-card">
+                    <div class="eyebrow danger">主要风险</div>
+                    <h3>${escapeHtml(model.risks[0] || '等待解析')}</h3>
+                </article>
+                <article class="summary-card">
+                    <div class="eyebrow success">建议动作</div>
+                    <h3>${escapeHtml(model.actions[0] || '等待解析')}</h3>
+                </article>
+            `;
+        }
+
+        function renderPriorityActions(model) {
+            const actionList = document.getElementById('action-list');
+            const priorityPanel = document.getElementById('priority-actions');
+            const items = model.actions.map((action, index) => {
+                const priority = priorityLabel(index);
+                return `
+                    <div class="action-item">
+                        <span class="${priority.className}">${priority.label}</span>
+                        <div class="text-sm leading-7 text-slate-700">${escapeHtml(action)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            actionList.innerHTML = `
+                <div class="eyebrow success">行动建议</div>
+                <h3 class="text-2xl font-bold mt-2 mb-2 text-slate-900">从报告直接落到执行</h3>
+                ${items}
+            `;
+            priorityPanel.innerHTML = items || '<div class="text-sm text-slate-500">暂无可解析动作建议。</div>';
+        }
+
+        function renderEvidence(model) {
+            const evidenceList = document.getElementById('evidence-list');
+            const html = model.evidence.map(item => `
+                <div class="evidence-item">
+                    <span class="priority-badge priority-low">证据</span>
+                    <div class="text-sm leading-7 text-slate-700">${escapeHtml(item)}</div>
+                </div>
+            `).join('');
+
+            evidenceList.innerHTML = html || '<div class="text-sm text-slate-500">当前报告中缺少可直接引用的原始片段。</div>';
+            document.getElementById('metric-evidence-count').textContent = String(model.evidence.length);
+        }
+
+        function renderSectionNav(sections) {
+            const nav = document.getElementById('section-nav');
+            nav.innerHTML = sections.map((section, index) => `
+                <a class="nav-chip" href="#section-${index + 1}">${escapeHtml(section.title)}</a>
+            `).join('');
+        }
+
+        function renderMarkdownLike(lines) {
+            const html = [];
+            let inList = false;
+            let inOrderedList = false;
+            let inTable = false;
+
+            const closeList = () => {
+                if (inList) {
+                    html.push('</ul>');
+                    inList = false;
+                }
+                if (inOrderedList) {
+                    html.push('</ol>');
+                    inOrderedList = false;
+                }
+            };
+
+            const closeTable = () => {
+                if (inTable) {
+                    html.push('</tbody></table>');
+                    inTable = false;
+                }
+            };
+
+            for (const rawLine of lines) {
+                const line = rawLine.trim();
+                if (!line) {
+                    closeList();
+                    closeTable();
+                    continue;
+                }
+
+                if (/^\|.+\|$/.test(line)) {
+                    closeList();
+                    const cells = line.split('|').map(cell => cell.trim()).filter(Boolean);
+                    if (!cells.length || cells.every(cell => /^[-:\s]+$/.test(cell))) {
+                        continue;
+                    }
+                    if (!inTable) {
+                        html.push('<table><tbody>');
+                        inTable = true;
+                    }
+                    html.push(`<tr>${cells.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`);
+                    continue;
+                } else {
+                    closeTable();
+                }
+
+                if (/^[-*]\s+/.test(line)) {
+                    if (!inList) {
+                        closeList();
+                        html.push('<ul>');
+                        inList = true;
+                    }
+                    html.push(`<li>${escapeHtml(line.replace(/^[-*]\s+/, ''))}</li>`);
+                    continue;
+                }
+
+                if (/^\d+\.\s+/.test(line)) {
+                    if (!inOrderedList) {
+                        closeList();
+                        html.push('<ol>');
+                        inOrderedList = true;
+                    }
+                    html.push(`<li>${escapeHtml(line.replace(/^\d+\.\s+/, ''))}</li>`);
+                    continue;
+                }
+
+                closeList();
+                html.push(`<p>${escapeHtml(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`);
+            }
+
+            closeList();
+            closeTable();
+            return html.join('');
+        }
+
+        function renderSections(model) {
+            const container = document.getElementById('report-content');
+            container.innerHTML = model.sections.map((section, index) => `
+                <section id="section-${index + 1}">
+                    <div class="eyebrow primary">Section ${String(index + 1).padStart(2, '0')}</div>
+                    <h2>${escapeHtml(section.title)}</h2>
+                    ${renderMarkdownLike(section.lines)}
+                </section>
+            `).join('');
+        }
+
+        function renderReport(report) {
+            const model = inferDecisionModel(report.content || '');
+            const generatedAt = report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知';
+
+            document.getElementById('report-title').textContent = report.report_title || '分析报告';
+            document.getElementById('topbar-meta').textContent = `报告生成时间：${generatedAt}`;
+            document.getElementById('hero-summary').textContent = model.summaryText;
+            document.getElementById('metric-status').textContent = '已生成';
+            document.getElementById('metric-generated-at').textContent = generatedAt;
+            document.getElementById('metric-priority').textContent = model.actions[0] || '待补充';
+
+            renderSummary(model);
+            renderPriorityActions(model);
+            renderEvidence(model);
+            renderSections(model);
+            renderSectionNav(model.sections);
+            setViewState('ready');
+        }
+
         async function loadReport() {
             const scenarioId = getScenarioIdFromUrl();
-            
             if (!scenarioId) {
-                showError('缺少场景ID参数，请从主页进入报告页面');
+                document.getElementById('error-message').textContent = '缺少场景ID参数，请从主页进入报告页面。';
+                setViewState('error');
                 return;
             }
-            
-            document.getElementById('loading-indicator').style.display = 'block';
-            document.getElementById('report-content').style.display = 'none';
-            document.getElementById('error-container').style.display = 'none';
-            
+
+            setViewState('loading');
+
             try {
                 const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/report`, {
                     method: 'GET',
                     credentials: 'include'
                 });
-                
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        await generateReport(scenarioId);
-                        return;
-                    } else if (response.status === 401) {
-                        document.getElementById('loading-indicator').style.display = 'none';
-                        showError('请先登录后再查看报告');
-                    } else {
-                        document.getElementById('loading-indicator').style.display = 'none';
-                        showError(`加载失败 (错误码: ${response.status})`);
-                    }
+
+                if (response.status === 404) {
+                    await generateReport(scenarioId);
                     return;
                 }
-                
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('请先登录后再查看报告。');
+                    }
+                    throw new Error(`加载失败，错误码 ${response.status}`);
+                }
+
                 const report = await response.json();
-                
-                document.getElementById('loading-indicator').style.display = 'none';
-                
-                document.getElementById('report-title').textContent = report.report_title || '分析报告';
-                document.getElementById('report-meta').textContent = `报告生成时间：${report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知'}`;
-                
-                const formattedContent = formatContent(report.content || '');
-                document.getElementById('report-content').innerHTML = formattedContent;
-                
-                document.getElementById('report-content').style.display = 'block';
-                
+                renderReport(report);
             } catch (error) {
-                console.error('加载报告失败:', error);
-                document.getElementById('loading-indicator').style.display = 'none';
-                showError('网络错误，请检查网络连接后重试');
+                document.getElementById('error-message').textContent = error.message || '网络错误，请稍后重试。';
+                setViewState('error');
             }
         }
-        
+
         async function generateReport(scenarioId) {
-            document.getElementById('loading-indicator').style.display = 'block';
-            document.getElementById('loading-text').textContent = '正在生成分析报告，请稍候...';
-            
+            document.getElementById('loading-text').textContent = '报告不存在，正在自动生成，请稍候...';
+
             try {
                 const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/generate-report`, {
                     method: 'POST',
                     credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                
+
                 if (!response.ok) {
-                    document.getElementById('loading-indicator').style.display = 'none';
                     if (response.status === 400) {
                         const errorData = await response.json();
-                        showError(errorData.error || '请先进行对话模拟');
-                    } else {
-                        showError(`生成报告失败 (错误码: ${response.status})`);
+                        throw new Error(errorData.error || '请先进行对话模拟。');
                     }
-                    return;
+                    throw new Error(`生成报告失败，错误码 ${response.status}`);
                 }
-                
+
                 const report = await response.json();
-                
-                document.getElementById('loading-indicator').style.display = 'none';
-                
-                document.getElementById('report-title').textContent = report.report_title || '分析报告';
-                document.getElementById('report-meta').textContent = `报告生成时间：${report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知'}`;
-                
-                const formattedContent = formatContent(report.content || '');
-                document.getElementById('report-content').innerHTML = formattedContent;
-                
-                document.getElementById('report-content').style.display = 'block';
-                
+                renderReport(report);
+                showToast('报告生成成功', 'success');
             } catch (error) {
-                console.error('生成报告失败:', error);
-                document.getElementById('loading-indicator').style.display = 'none';
-                showError('生成报告失败，请重试');
+                document.getElementById('error-message').textContent = error.message || '生成报告失败，请重试。';
+                setViewState('error');
             }
         }
-        
-        function showError(message) {
-            document.getElementById('loading-indicator').style.display = 'none';
-            document.getElementById('report-content').style.display = 'none';
-            document.getElementById('error-container').style.display = 'block';
-            document.getElementById('error-message').textContent = message;
-        }
-        
-        function formatContent(content) {
-            if (!content) return '<p>报告内容为空</p>';
 
-            let text = content;
-
-            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-            const lines = text.split('\n');
-            const result = [];
-            let i = 0;
-            let inTable = false;
-            let tableRows = [];
-
-            while (i < lines.length) {
-                let line = lines[i].trim();
-
-                if (line.length === 0) {
-                    if (inTable) {
-                        result.push('</tbody></table>');
-                        result.push('<br>');
-                        inTable = false;
-                        tableRows = [];
-                    }
-                    i++;
-                    continue;
-                }
-
-                if (line.startsWith('#')) {
-                    if (inTable) {
-                        result.push('</tbody></table>');
-                        result.push('<br>');
-                        inTable = false;
-                        tableRows = [];
-                    }
-                    const match = line.match(/^(#{1,6})\s(.+)$/);
-                    if (match) {
-                        const level = match[1].length;
-                        result.push(`<h${level}>${match[2]}</h${level}>`);
-                    }
-                    i++;
-                    continue;
-                }
-
-                if (line.match(/^\|.+\|$/)) {
-                    const cells = line.split('|').map(c => c.trim()).filter(c => c && !c.match(/^-+$/));
-
-                    if (cells.length > 0) {
-                        if (!inTable) {
-                            inTable = true;
-                            tableRows = [];
-                            result.push('<table class="report-table">');
-                        }
-
-                        const isSeparator = line.match(/^\|[-:\s]+\|[-:\s]+\|$/);
-
-                        if (isSeparator) {
-                            i++;
-                            continue;
-                        }
-
-                        tableRows.push(cells);
-
-                        if (tableRows.length === 1) {
-                            result.push('<thead><tr>');
-                            cells.forEach(cell => {
-                                result.push(`<th>${cell}</th>`);
-                            });
-                            result.push('</tr></thead><tbody>');
-                        } else {
-                            result.push('<tr>');
-                            cells.forEach(cell => {
-                                result.push(`<td>${cell}</td>`);
-                            });
-                            result.push('</tr>');
-                        }
-                    }
-                    i++;
-                    continue;
-                } else {
-                    if (inTable) {
-                        result.push('</tbody></table>');
-                        result.push('<br>');
-                        inTable = false;
-                        tableRows = [];
-                    }
-                }
-
-                if (line.startsWith('-') || line.startsWith('*')) {
-                    result.push(`<li>${line.substring(1).trim()}</li>`);
-                    i++;
-                    continue;
-                }
-
-                if (line.match(/^\d+\./)) {
-                    result.push(`<li>${line.replace(/^\d+\.\s*/, '')}</li>`);
-                    i++;
-                    continue;
-                }
-
-                if (line === '---') {
-                    result.push('<hr>');
-                    i++;
-                    continue;
-                }
-
-                result.push(`<p>${line}</p>`);
-                i++;
-            }
-
-            if (inTable) {
-                result.push('</tbody></table>');
-            }
-
-            const listContent = result.join('\n');
-            const paragraphs = listContent.split('\n');
-            const merged = [];
-            let inList = false;
-
-            for (const p of paragraphs) {
-                if (p.startsWith('<li>')) {
-                    if (!inList) {
-                        merged.push('<ul>' + p);
-                        inList = true;
-                    } else {
-                        merged.push(p);
-                    }
-                } else {
-                    if (inList) {
-                        merged.push('</ul>' + p);
-                        inList = false;
-                    } else {
-                        merged.push(p);
-                    }
-                }
-            }
-
-            if (inList) {
-                merged.push('</ul>');
-            }
-
-            return merged.join('\n');
-        }
-        
-        document.getElementById('back-btn').addEventListener('click', () => {
-            window.location.href = '/';
-        });
-        
-        document.getElementById('print-btn').addEventListener('click', () => {
-            window.print();
-        });
-        
-        document.getElementById('export-pdf-btn').addEventListener('click', async () => {
+        async function exportPdf() {
             const scenarioId = getScenarioIdFromUrl();
             if (!scenarioId) {
-                alert('无法获取场景ID');
+                showToast('无法获取场景ID', 'error');
                 return;
             }
-            
+
             const button = document.getElementById('export-pdf-btn');
             const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>生成中...';
             button.disabled = true;
-            
+
             try {
                 const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/report/pdf`, {
                     method: 'GET',
                     credentials: 'include'
                 });
-                
+
                 if (!response.ok) {
                     const errorData = await response.json();
-                    alert(errorData.error || '导出PDF失败');
-                    return;
+                    throw new Error(errorData.error || '导出 PDF 失败');
                 }
-                
+
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -658,19 +921,25 @@
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                
-                showToast('PDF导出成功！', 'success');
+                showToast('PDF 导出成功', 'success');
             } catch (error) {
-                console.error('导出PDF失败:', error);
-                alert('导出PDF失败，请重试');
+                showToast(error.message || '导出失败，请重试', 'error');
             } finally {
                 button.innerHTML = originalText;
                 button.disabled = false;
             }
+        }
+
+        document.getElementById('back-btn').addEventListener('click', () => {
+            window.location.href = '/';
         });
-        
+
+        document.getElementById('print-btn').addEventListener('click', () => {
+            window.print();
+        });
+
+        document.getElementById('export-pdf-btn').addEventListener('click', exportPdf);
         document.getElementById('retry-btn').addEventListener('click', loadReport);
-        
         document.addEventListener('DOMContentLoaded', loadReport);
     </script>
 </body>

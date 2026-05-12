@@ -8,6 +8,103 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 32%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 30%),
+                linear-gradient(135deg, #f8fafc 0%, #eef4ff 45%, #f8fafc 100%);
+        }
+
+        :root {
+            --surface: rgba(255, 255, 255, 0.9);
+            --surface-strong: rgba(255, 255, 255, 0.98);
+            --border-soft: rgba(148, 163, 184, 0.18);
+            --text-strong: #0f172a;
+            --text-muted: #64748b;
+            --brand: #2563eb;
+            --brand-strong: #1d4ed8;
+            --success: #059669;
+            --warning: #d97706;
+            --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.1);
+        }
+
+        .shell-card {
+            background: var(--surface);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .workspace-hero {
+            background:
+                linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(99, 102, 241, 0.94)),
+                radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 32%);
+            color: white;
+        }
+
+        .decision-card {
+            background: var(--surface-strong);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            box-shadow: 0 18px 45px rgba(37, 99, 235, 0.08);
+        }
+
+        .decision-chip {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--brand-strong);
+            border: 1px solid rgba(37, 99, 235, 0.12);
+        }
+
+        .step-pill {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.03), rgba(37, 99, 235, 0.08));
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .status-pill.ok {
+            background: rgba(5, 150, 105, 0.12);
+            color: var(--success);
+        }
+
+        .status-pill.wait {
+            background: rgba(217, 119, 6, 0.12);
+            color: var(--warning);
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1rem;
+        }
+
+        .mini-metric {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 1.2rem;
+            padding: 1rem 1.1rem;
+            min-height: 110px;
+        }
+
+        .mini-metric .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-top: 0.25rem;
+        }
+
+        .mini-metric .label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
         
         .participant-card {
@@ -424,6 +521,12 @@
         .host-avatar {
             background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
         }
+
+        @media (min-width: 1024px) {
+            .workspace-grid {
+                grid-template-columns: 1.3fr 0.9fr;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
@@ -561,6 +664,59 @@
             </header>
 
             <!-- 场景管理面板 -->
+            <section id="decision-board" class="px-8 pt-8">
+                <div class="shell-card workspace-hero rounded-[28px] p-8">
+                    <div class="workspace-grid">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-3 mb-4">
+                                <span class="status-pill wait" id="decision-status">当前无场景</span>
+                                <span class="text-sm opacity-80" id="decision-substatus">先创建或选择一个场景，再生成参与者和报告。</span>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-3" id="decision-title">决策驾驶舱</h3>
+                            <p class="text-white/85 text-sm leading-7 max-w-2xl" id="decision-summary">
+                                这里会汇总当前场景的核心卖点、讨论主题和下一步动作，帮助你快速判断现在该推进到哪一步。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-5" id="decision-tags"></div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="mini-metric">
+                                <div class="label">场景</div>
+                                <div class="value" id="metric-scenario">--</div>
+                                <div class="text-xs text-slate-500 mt-2" id="metric-scenario-desc">待选择场景</div>
+                            </div>
+                            <div class="mini-metric">
+                                <div class="label">参与者</div>
+                                <div class="value" id="metric-participants">--</div>
+                                <div class="text-xs text-slate-500 mt-2" id="metric-participants-desc">等待生成</div>
+                            </div>
+                            <div class="mini-metric">
+                                <div class="label">报告</div>
+                                <div class="value" id="metric-report">--</div>
+                                <div class="text-xs text-slate-500 mt-2" id="metric-report-desc">等待生成</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+                        <div class="step-pill rounded-2xl p-4">
+                            <div class="text-xs uppercase tracking-[0.22em] text-white/70">Step 01</div>
+                            <div class="font-semibold text-white mt-1">生成参与者</div>
+                            <div class="text-sm text-white/80 mt-2">补齐人群画像，明确谁在讨论、从什么角度讨论。</div>
+                        </div>
+                        <div class="step-pill rounded-2xl p-4">
+                            <div class="text-xs uppercase tracking-[0.22em] text-white/70">Step 02</div>
+                            <div class="font-semibold text-white mt-1">模拟讨论</div>
+                            <div class="text-sm text-white/80 mt-2">用讨论记录验证需求、争议点和真实反馈。</div>
+                        </div>
+                        <div class="step-pill rounded-2xl p-4">
+                            <div class="text-xs uppercase tracking-[0.22em] text-white/70">Step 03</div>
+                            <div class="font-semibold text-white mt-1">生成报告</div>
+                            <div class="text-sm text-white/80 mt-2">把结论转成可执行的产品和营销建议。</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <div id="scenarios-panel" class="p-8">
                 <div id="scenarios-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div class="col-span-full text-center text-gray-400 py-16">
@@ -643,9 +799,12 @@
 
             <!-- 分析报告面板 -->
             <div id="report-panel" class="p-8 hidden">
-                <div class="mb-8">
+                <div class="mb-8 flex flex-wrap gap-4 items-center">
                     <button id="generate-report-btn" class="btn-purple text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
                         <span class="text-lg">📊</span> 生成分析报告
+                    </button>
+                    <button id="open-report-page-btn" class="btn-secondary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                        <span class="text-lg">↗</span> 打开详细报告页
                     </button>
                 </div>
                 <div id="report-content">
@@ -845,6 +1004,11 @@
     <script>
         const API_BASE = '/api';
         let currentScenarioId = null;
+        let currentScenario = null;
+        let scenarioCache = [];
+        let participantCountCache = 0;
+        let conversationCountCache = 0;
+        let reportReadyCache = false;
         let currentUser = null;
         let currentToken = null;
 
@@ -902,6 +1066,67 @@
         // 隐藏AI正在输入指示器
         function hideTyping() {
             document.getElementById('typing-indicator').classList.add('hidden');
+        }
+
+        function updateDecisionBoard() {
+            const status = document.getElementById('decision-status');
+            const substatus = document.getElementById('decision-substatus');
+            const title = document.getElementById('decision-title');
+            const summary = document.getElementById('decision-summary');
+            const tags = document.getElementById('decision-tags');
+            const scenarioMetric = document.getElementById('metric-scenario');
+            const scenarioDesc = document.getElementById('metric-scenario-desc');
+            const participantMetric = document.getElementById('metric-participants');
+            const participantDesc = document.getElementById('metric-participants-desc');
+            const reportMetric = document.getElementById('metric-report');
+            const reportDesc = document.getElementById('metric-report-desc');
+
+            if (!status || !substatus || !title || !summary || !tags) {
+                return;
+            }
+
+            if (!currentScenario) {
+                status.textContent = '当前无场景';
+                status.className = 'status-pill wait';
+                substatus.textContent = '先创建或选择一个场景，再生成参与者和报告。';
+                title.textContent = '决策驾驶舱';
+                summary.textContent = '这里会汇总当前场景的核心卖点、讨论主题和下一步动作，帮助你快速判断现在该推进到哪一步。';
+                tags.innerHTML = '';
+                if (scenarioMetric) scenarioMetric.textContent = '--';
+                if (scenarioDesc) scenarioDesc.textContent = '待选择场景';
+                if (participantMetric) participantMetric.textContent = '--';
+                if (participantDesc) participantDesc.textContent = '等待生成';
+                if (reportMetric) reportMetric.textContent = '--';
+                if (reportDesc) reportDesc.textContent = '等待生成';
+                return;
+            }
+
+            const tagsData = [
+                currentScenario.occasion_description || '场景任务',
+                ...(currentScenario.core_selling_points || []).slice(0, 3)
+            ].filter(Boolean);
+
+            status.textContent = '当前已选场景';
+            status.className = 'status-pill ok';
+            substatus.textContent = '建议先补齐参与者与讨论，再进入报告输出。';
+            title.textContent = currentScenario.product_name || '决策驾驶舱';
+            summary.textContent = currentScenario.product_concept || '场景概述';
+            tags.innerHTML = tagsData.map(tag => `<span class="decision-chip px-3 py-1 rounded-full text-xs font-semibold">${tag}</span>`).join('');
+            if (scenarioMetric) scenarioMetric.textContent = currentScenario.id ? `#${currentScenario.id}` : '--';
+            if (scenarioDesc) scenarioDesc.textContent = '当前项目';
+            if (participantMetric) participantMetric.textContent = String(participantCountCache);
+            if (participantDesc) participantDesc.textContent = participantCountCache > 0 ? '参与者已就绪' : '等待生成';
+            if (reportMetric) reportMetric.textContent = reportReadyCache ? '已准备' : '待查看';
+            if (reportDesc) reportDesc.textContent = reportReadyCache ? '可直接查看' : '等待生成';
+        }
+
+        function setCurrentScenario(scenarioId) {
+            currentScenarioId = scenarioId;
+            currentScenario = scenarioCache.find(s => s.id === scenarioId) || null;
+            participantCountCache = 0;
+            conversationCountCache = 0;
+            reportReadyCache = false;
+            updateDecisionBoard();
         }
 
         // 认证相关
@@ -1061,7 +1286,10 @@
                 p.classList.remove('panel-transition');
             });
             
-            event.target.classList.add('active');
+            const activeBtn = document.querySelector(`.nav-link[onclick="showPanel('${panelName}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
             
             const targetPanel = document.getElementById(`${panelName}-panel`);
             setTimeout(() => {
@@ -1083,6 +1311,8 @@
             else if (panelName === 'participants') loadParticipants();
             else if (panelName === 'conversation') loadConversation();
             else if (panelName === 'report') loadReport();
+
+            updateDecisionBoard();
         }
 
         // 场景管理
@@ -1218,16 +1448,18 @@
             try {
                 const response = await apiFetch(`${API_BASE}/scenarios`, { method: 'GET' });
                 const scenarios = await response.json();
+                scenarioCache = Array.isArray(scenarios) ? scenarios : [];
                 const list = document.getElementById('scenarios-list');
 
                 hideLoading();
 
-                if (scenarios.length === 0) {
+                if (scenarioCache.length === 0) {
                     list.innerHTML = '<div class="col-span-full text-center text-gray-400 py-16"><div class="text-6xl mb-6">📭</div><p class="text-lg">暂无场景，请创建新场景</p></div>';
+                    updateDecisionBoard();
                     return;
                 }
 
-                list.innerHTML = scenarios.map((s, index) => `
+                list.innerHTML = scenarioCache.map((s, index) => `
                     <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer scenario-card list-item ${currentScenarioId === s.id ? 'ring-2 ring-blue-500 scale-105' : ''}" data-scenario-id="${s.id}" onclick="selectScenario(${s.id})" style="animation-delay: ${index * 0.05}s;">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="font-bold text-gray-800 text-lg">${s.product_name}</h3>
@@ -1249,6 +1481,12 @@
                         <p class="text-xs text-gray-400 mt-4">创建于 ${new Date(s.created_at).toLocaleDateString('zh-CN')}</p>
                     </div>
                 `).join('');
+
+                if (currentScenarioId) {
+                    setCurrentScenario(currentScenarioId);
+                } else {
+                    updateDecisionBoard();
+                }
             } catch (error) {
                 hideLoading();
                 console.error('加载场景失败:', error);
@@ -1268,7 +1506,7 @@
                 selectedCard.classList.add('ring-2', 'ring-blue-500', 'scale-105');
             }
             
-            currentScenarioId = id;
+            setCurrentScenario(id);
             showToast(`已选择场景 #${id}`, 'info');
             
             // 刷新其他面板
@@ -1295,6 +1533,7 @@
             try {
                 const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/participants`, { method: 'GET' });
                 const participants = await response.json();
+                participantCountCache = Array.isArray(participants) ? participants.length : 0;
                 const list = document.getElementById('participants-list');
 
                 hideLoading();
@@ -1330,6 +1569,7 @@
                         </div>
                     </div>
                 `).join('');
+                updateDecisionBoard();
             } catch (error) {
                 hideLoading();
                 console.error('加载参与者失败:', error);
@@ -1459,6 +1699,8 @@
                     showToast('场景已删除', 'success');
                     if (currentScenarioId === scenarioId) {
                         currentScenarioId = null;
+                        currentScenario = null;
+                        updateDecisionBoard();
                     }
                     loadScenarios();
                 } else {
@@ -1484,6 +1726,7 @@
             try {
                 const response = await apiFetch(`${API_BASE}/scenarios/${currentScenarioId}/conversation`, { method: 'GET' });
                 const messages = await response.json();
+                conversationCountCache = Array.isArray(messages) ? messages.length : 0;
                 const container = document.getElementById('conversation-messages');
 
                 hideLoading();
@@ -1522,6 +1765,7 @@
                 
                 // 如果有讨论记录，显示用户输入区域（允许用户参与对话）
                 document.getElementById('user-input-area').style.display = 'block';
+                updateDecisionBoard();
             } catch (error) {
                 hideLoading();
                 console.error('加载讨论记录失败:', error);
@@ -1649,6 +1893,8 @@
         async function loadReport() {
             if (!currentScenarioId) {
                 document.getElementById('report-content').innerHTML = '<div class="text-center text-gray-400 py-16"><div class="text-6xl mb-4">📊</div><p class="text-lg">请先选择场景</p></div>';
+                reportReadyCache = false;
+                updateDecisionBoard();
                 return;
             }
 
@@ -1661,6 +1907,8 @@
 
                 if (response.status === 404) {
                     document.getElementById('report-content').innerHTML = '<div class="text-center text-gray-400 py-16"><div class="text-6xl mb-4">📊</div><p class="text-lg">暂无报告，请先生成</p></div>';
+                    reportReadyCache = false;
+                    updateDecisionBoard();
                     return;
                 }
 
@@ -1668,10 +1916,32 @@
                 
                 const content = report.content || '';
                 const formattedContent = content.replace(/\n/g, '<br>');
+                reportReadyCache = true;
                 
                 document.getElementById('report-content').innerHTML = `
-                    <div class="bg-white rounded-2xl p-8 shadow-lg card">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-6">${report.report_title || '分析报告'}</h3>
+                    <div class="bg-white rounded-2xl p-8 shadow-lg card border border-slate-100">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.24em] text-blue-600 font-bold">决策摘要</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-2">${report.report_title || '分析报告'}</h3>
+                            </div>
+                            <button class="text-sm px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700" onclick="window.location.href='/report?scenario_id=${currentScenarioId}'">打开详细报告页</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                            <div class="decision-card rounded-2xl p-4">
+                                <div class="text-xs text-slate-500 uppercase">状态</div>
+                                <div class="font-semibold text-slate-800 mt-1">报告已生成</div>
+                            </div>
+                            <div class="decision-card rounded-2xl p-4">
+                                <div class="text-xs text-slate-500 uppercase">重点</div>
+                                <div class="font-semibold text-slate-800 mt-1">结论 / 风险 / 建议动作</div>
+                            </div>
+                            <div class="decision-card rounded-2xl p-4">
+                                <div class="text-xs text-slate-500 uppercase">下一步</div>
+                                <div class="font-semibold text-slate-800 mt-1">进入详细分析页</div>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800 mb-4">快速预览</h4>
                         <div class="prose prose-gray max-w-none">
                             <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">${formattedContent}</div>
                         </div>
@@ -1680,6 +1950,7 @@
                         </div>
                     </div>
                 `;
+                updateDecisionBoard();
             } catch (error) {
                 hideLoading();
                 console.error('加载报告失败:', error);
@@ -1708,6 +1979,8 @@
 
                 if (response.ok) {
                     showToast('报告生成成功！正在跳转...', 'success');
+                    reportReadyCache = true;
+                    updateDecisionBoard();
                     setTimeout(() => {
                         window.location.href = `/report?scenario_id=${currentScenarioId}`;
                     }, 1000);
@@ -1733,6 +2006,13 @@
             document.getElementById('regenerate-participants-btn').addEventListener('click', () => generateParticipants(true));
             document.getElementById('start-simulation-btn').addEventListener('click', startSimulation);
             document.getElementById('generate-report-btn').addEventListener('click', generateReport);
+            document.getElementById('open-report-page-btn').addEventListener('click', () => {
+                if (!currentScenarioId) {
+                    showToast('请先选择场景', 'warning');
+                    return;
+                }
+                window.location.href = `/report?scenario_id=${currentScenarioId}`;
+            });
             
             // 讨论人数滑块监听
             const participantSlider = document.getElementById('new-participant-count');
@@ -1756,6 +2036,7 @@
             
             // 重置讨论
             document.getElementById('reset-conversation-btn').addEventListener('click', resetConversation);
+            updateDecisionBoard();
         });
     </script>
 </body>
