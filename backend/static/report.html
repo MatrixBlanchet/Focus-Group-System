@@ -128,6 +128,60 @@
             margin-top: 20px;
         }
 
+        .scenario-strip {
+            margin-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .scenario-strip-title {
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.72;
+            font-weight: 800;
+        }
+
+        .scenario-strip-value {
+            margin-top: 6px;
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .scenario-strip-subtitle {
+            margin-top: 4px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.7;
+            max-width: 720px;
+        }
+
+        .scenario-strip-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .scenario-strip-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
         .hero-metric {
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.14);
@@ -267,6 +321,18 @@
             margin: 10px 0;
         }
 
+        .report-content .report-step-title {
+            margin: 18px 0 8px;
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--text-strong);
+            line-height: 1.7;
+        }
+
+        .report-content .report-step-title strong {
+            display: inline-block;
+        }
+
         .report-content ul,
         .report-content ol {
             margin: 10px 0;
@@ -277,13 +343,20 @@
             margin: 8px 0;
         }
 
+        .report-content .report-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
         .report-content table {
             width: 100%;
             border-collapse: collapse;
-            margin: 16px 0;
-            border-radius: 14px;
-            overflow: hidden;
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            margin: 0;
+            min-width: 640px;
         }
 
         .report-content th,
@@ -291,11 +364,19 @@
             padding: 12px 14px;
             text-align: left;
             border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+            vertical-align: top;
+            line-height: 1.7;
         }
 
         .report-content th {
             background: rgba(37, 99, 235, 0.08);
             color: var(--text-strong);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .report-content tbody tr:nth-child(even) td {
+            background: rgba(148, 163, 184, 0.05);
         }
 
         .report-content tr:last-child td {
@@ -338,6 +419,30 @@
             border: 4px solid rgba(148, 163, 184, 0.2);
             border-top-color: var(--brand);
             animation: spin 1s linear infinite;
+        }
+
+        .progress-track {
+            width: min(320px, 100%);
+            height: 10px;
+            margin: 18px auto 10px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.18);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #2563eb, #4f46e5);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+            transition: width 0.28s ease;
+        }
+
+        .progress-caption {
+            margin-top: 6px;
+            color: var(--text-muted);
+            font-size: 13px;
         }
 
         .toast {
@@ -446,6 +551,11 @@
                 <button id="back-btn" class="btn btn-secondary"><i class="fas fa-arrow-left"></i>返回首页</button>
                 <button id="print-btn" class="btn btn-secondary"><i class="fas fa-print"></i>打印</button>
                 <button id="export-pdf-btn" class="btn btn-primary"><i class="fas fa-file-pdf"></i>导出 PDF</button>
+                <button id="export-txt-btn" class="btn btn-secondary"><i class="fas fa-file-lines"></i>导出 TXT</button>
+                <button id="export-docx-btn" class="btn btn-secondary"><i class="fas fa-file-word"></i>导出 Word</button>
+                <button id="export-pptx-btn" class="btn btn-secondary"><i class="fas fa-file-powerpoint"></i>导出 PPTX</button>
+                <button id="generate-presentation-btn" class="btn btn-secondary"><i class="fas fa-panorama"></i>生成演示稿</button>
+                <button id="open-presentation-btn" class="btn btn-secondary"><i class="fas fa-up-right-and-down-left-from-center"></i>打开演示稿</button>
             </div>
         </header>
 
@@ -454,6 +564,16 @@
                 <div class="eyebrow primary">Executive Summary</div>
                 <h2 id="report-title" class="text-4xl font-extrabold mt-3 mb-3">加载中...</h2>
                 <p id="hero-summary" class="text-white/85 text-sm leading-7 max-w-3xl">系统将把现有报告内容重组为结论、洞察、风险、建议动作和证据，帮助企业更快做判断。</p>
+                <div class="scenario-strip">
+                    <div>
+                        <div class="scenario-strip-title">Current Scenario</div>
+                        <div class="scenario-strip-value" id="scenario-name">加载场景中...</div>
+                        <div class="scenario-strip-subtitle" id="scenario-concept">报告正在读取对应场景信息。</div>
+                    </div>
+                    <div class="scenario-strip-tags" id="scenario-tags">
+                        <span class="scenario-strip-tag">等待加载</span>
+                    </div>
+                </div>
                 <div class="hero-metrics">
                     <div class="hero-metric">
                         <div class="label">报告状态</div>
@@ -481,6 +601,10 @@
                             <div class="spinner"></div>
                             <h3 class="text-xl font-bold text-slate-900 mb-2">正在构建决策视图</h3>
                             <p id="loading-text" class="text-slate-500">正在加载报告内容...</p>
+                            <div class="progress-track" aria-hidden="true">
+                                <div id="report-progress-bar" class="progress-fill"></div>
+                            </div>
+                            <div id="report-progress-text" class="progress-caption">正在准备报告进度...</div>
                         </div>
 
                         <div id="error-container" class="error-state hidden">
@@ -522,6 +646,22 @@
                             <div class="nav-chip-list" id="section-nav"></div>
                         </div>
                     </section>
+
+                    <section class="panel">
+                        <div class="panel-body">
+                            <div class="eyebrow success">来源拆解</div>
+                            <h3 class="text-xl font-bold mt-3 mb-2">结论来自哪里</h3>
+                            <div id="source-breakdown-list" class="evidence-list"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-body">
+                            <div class="eyebrow primary">研究轮次</div>
+                            <h3 class="text-xl font-bold mt-3 mb-2">历史研究记录</h3>
+                            <div id="research-round-list" class="evidence-list"></div>
+                        </div>
+                    </section>
                 </aside>
             </div>
         </div>
@@ -558,6 +698,48 @@
             return params.get('scenario_id');
         }
 
+        function shouldForceRegenerate() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('regenerate') === '1';
+        }
+
+        function clearForceRegenerateFlag() {
+            const url = new URL(window.location.href);
+            if (!url.searchParams.has('regenerate')) {
+                return;
+            }
+            url.searchParams.delete('regenerate');
+            window.history.replaceState({}, '', url.toString());
+        }
+
+        function getScenarioSourceLabel(meetingStatus) {
+            return meetingStatus === 'standalone' ? '普通产品讨论' : '会议室讨论';
+        }
+
+        function buildHomeReturnUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('from') === 'meeting' && params.get('room_id')) {
+                return `/meeting-room?room_id=${encodeURIComponent(params.get('room_id'))}`;
+            }
+
+            const scenarioId = getScenarioIdFromUrl();
+            const nextParams = new URLSearchParams();
+            nextParams.set('panel', 'report');
+            if (scenarioId) {
+                nextParams.set('scenario_id', scenarioId);
+                localStorage.setItem('focusGroupCurrentScenarioId', String(scenarioId));
+            }
+            return `/?${nextParams.toString()}`;
+        }
+
+        function syncBackButtonLabel() {
+            if (new URLSearchParams(window.location.search).get('from') === 'meeting') {
+                document.getElementById('back-btn').innerHTML = '<i class="fas fa-arrow-left"></i>返回会议室';
+                return;
+            }
+            document.getElementById('back-btn').innerHTML = '<i class="fas fa-arrow-left"></i>返回首页';
+        }
+
         function escapeHtml(value = '') {
             return value
                 .replace(/&/g, '&amp;')
@@ -567,23 +749,97 @@
                 .replace(/'/g, '&#39;');
         }
 
+        function formatInlineMarkup(value = '') {
+            return escapeHtml(value)
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.+?)__/g, '<strong>$1</strong>');
+        }
+
+        function stripInlineMarkup(value = '') {
+            return value.replace(/\*\*(.+?)\*\*/g, '$1').replace(/__(.+?)__/g, '$1').trim();
+        }
+
+        async function loadScenarioContext(scenarioId) {
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const scenario = await response.json();
+                const scenarioName = document.getElementById('scenario-name');
+                const scenarioConcept = document.getElementById('scenario-concept');
+                const scenarioTags = document.getElementById('scenario-tags');
+
+                if (scenarioName) scenarioName.textContent = scenario.product_name || `场景 #${scenarioId}`;
+                if (scenarioConcept) scenarioConcept.textContent = scenario.product_concept || '当前报告基于所选场景生成。';
+
+                if (scenarioTags) {
+                    const tagItems = [
+                        getScenarioSourceLabel(scenario.meeting_status),
+                        scenario.id ? `场景 #${scenario.id}` : '',
+                        scenario.occasion_description || '',
+                        ...(scenario.discussion_topics || []).slice(0, 2)
+                    ].filter(Boolean);
+                    scenarioTags.innerHTML = tagItems.length
+                        ? tagItems.map(tag => `<span class="scenario-strip-tag">${escapeHtml(tag)}</span>`).join('')
+                        : '<span class="scenario-strip-tag">已加载场景</span>';
+                }
+            } catch (error) {
+                // Ignore context errors and keep report rendering available.
+            }
+        }
+
         function setViewState(state) {
             document.getElementById('loading-indicator').classList.toggle('hidden', state !== 'loading');
             document.getElementById('error-container').classList.toggle('hidden', state !== 'error');
             document.getElementById('report-view').classList.toggle('hidden', state !== 'ready');
         }
 
-        function isHeading(line) {
-            return /^#{1,6}\s+/.test(line);
+        let reportProgressValue = 0;
+
+        function setReportProgress(pct, text) {
+            const safePct = Math.max(0, Math.min(100, Number.isFinite(pct) ? pct : 0));
+            const nextPct = Math.max(reportProgressValue, safePct);
+            reportProgressValue = nextPct;
+            document.getElementById('report-progress-bar').style.width = nextPct + '%';
+            document.getElementById('report-progress-text').textContent = text || '正在生成报告...';
+            if (text) {
+                document.getElementById('loading-text').textContent = text;
+            }
         }
 
-        function headingTitle(line) {
-            return line.replace(/^#{1,6}\s+/, '').trim();
+        function detectPrimaryHeadingLevel(lines) {
+            const levels = lines
+                .map(line => {
+                    const match = line.trim().match(/^(#{2,6})\s+/);
+                    return match ? match[1].length : null;
+                })
+                .filter(level => level !== null);
+
+            if (!levels.length) {
+                return null;
+            }
+
+            return Math.min(...levels);
+        }
+
+        function isHeading(line, level = 2) {
+            return new RegExp(`^#{${level}}\\s+`).test(line);
+        }
+
+        function headingTitle(line, level = 2) {
+            return line.replace(new RegExp(`^#{${level}}\\s+`), '').trim();
         }
 
         function parseSections(content) {
             const lines = content.split(/\r?\n/);
             const sections = [];
+            const primaryHeadingLevel = detectPrimaryHeadingLevel(lines);
             let current = { title: '报告正文', lines: [] };
 
             for (const rawLine of lines) {
@@ -593,11 +849,11 @@
                     continue;
                 }
 
-                if (isHeading(line)) {
+                if (primaryHeadingLevel && isHeading(line, primaryHeadingLevel)) {
                     if (current.lines.some(item => item.trim())) {
                         sections.push(current);
                     }
-                    current = { title: headingTitle(line), lines: [] };
+                    current = { title: headingTitle(line, primaryHeadingLevel), lines: [] };
                     continue;
                 }
 
@@ -626,19 +882,34 @@
             return lines.filter(line => line && !/^[-*]\s+/.test(line)).slice(0, count);
         }
 
-        function inferDecisionModel(content) {
+        function isAiErrorText(text = '') {
+            const value = String(text || '').trim();
+            if (!value) return false;
+            return /API Error|Request Error|Insufficient Balance|invalid_request_error|unknown_error/i.test(value);
+        }
+
+        function safeSummaryText(text, fallback) {
+            return isAiErrorText(text) ? fallback : text;
+        }
+
+        function inferDecisionModel(content, reportTitle = '') {
             const sections = parseSections(content);
             const insightSection = findSection(sections, ['洞察', '需求', '用户']);
             const strategySection = findSection(sections, ['建议', '定位', '总结', '行动']);
             const analysisSection = findSection(sections, ['优劣势', '风险', '分析']);
-            const summarySection = findSection(sections, ['总结', '结论']) || sections[0];
+            const summarySection = findSection(sections, ['摘要', '总结', '结论']) || sections[0];
 
-            const summaryText = firstMeaningfulLines(summarySection?.lines || content.split(/\r?\n/), 2).join(' ');
+            const summarySource = firstMeaningfulLines(summarySection?.lines || content.split(/\r?\n/), 4);
+            const summaryText = summarySource
+                .filter(line => !line.includes(reportTitle))
+                .filter(line => !/^\d+\./.test(line))
+                .slice(0, 2)
+                .join(' ');
             const insights = extractBulletLines(insightSection?.lines || []).slice(0, 3);
             const actions = extractBulletLines(strategySection?.lines || []).slice(0, 4);
             const riskCandidates = (analysisSection?.lines || []).filter(line => /风险|问题|劣势|顾虑|挑战/.test(line));
             const risks = (extractBulletLines(riskCandidates).length ? extractBulletLines(riskCandidates) : riskCandidates).slice(0, 3);
-            const evidence = sections.flatMap(section => section.lines.filter(line => line.length >= 18)).slice(0, 4);
+            const evidence = sections.flatMap(section => section.lines.filter(line => line.length >= 18)).slice(0, 6);
 
             return {
                 sections,
@@ -650,30 +921,84 @@
             };
         }
 
+        function mergeStructuredModel(baseModel, report) {
+            const structuredActions = Array.isArray(report.recommended_actions) && report.recommended_actions.length
+                ? report.recommended_actions
+                : baseModel.actions;
+            const structuredRisks = Array.isArray(report.decision_risks) && report.decision_risks.length
+                ? report.decision_risks
+                : baseModel.risks;
+            const structuredEvidence = Array.isArray(report.evidence_items) && report.evidence_items.length
+                ? report.evidence_items
+                : baseModel.evidence;
+            const structuredAssumptions = Array.isArray(report.key_assumptions) ? report.key_assumptions : [];
+            return {
+                ...baseModel,
+                actions: structuredActions,
+                risks: structuredRisks,
+                evidence: structuredEvidence,
+                assumptions: structuredAssumptions,
+                confidenceLevel: report.confidence_level || '中',
+                sourceBreakdown: Array.isArray(report.source_breakdown) ? report.source_breakdown : []
+            };
+        }
+
+        function normalizeEvidenceItem(item, fallbackConfidence) {
+            if (item && typeof item === 'object' && !Array.isArray(item)) {
+                const title = String(item.title || item.section || item.source_title || '证据片段').trim();
+                const content = String(item.content || item.summary || '').trim();
+                const sourceLabel = String(item.source_label || item.source_domain || item.generated_by || '').trim();
+                const strengthLevel = String(item.strength_level || fallbackConfidence || '中').trim();
+                return {
+                    title,
+                    content: content || title,
+                    sourceLabel,
+                    strengthLevel
+                };
+            }
+
+            const text = String(item || '').trim();
+            return {
+                title: '证据片段',
+                content: text,
+                sourceLabel: '',
+                strengthLevel: String(fallbackConfidence || '中').trim()
+            };
+        }
+
         function priorityLabel(index) {
             if (index === 0) return { label: '高优先级', className: 'priority-badge priority-high' };
             if (index === 1) return { label: '中优先级', className: 'priority-badge priority-medium' };
             return { label: '可跟进', className: 'priority-badge priority-low' };
         }
 
-        function renderSummary(model) {
+        function renderSummary(model, executiveSummary = '') {
             const summaryGrid = document.getElementById('summary-grid');
+            const summaryValue = safeSummaryText(executiveSummary || model.summaryText, '当前报告摘要暂不可用，请补充模型额度后重新生成报告。');
             summaryGrid.innerHTML = `
                 <article class="summary-card">
                     <div class="eyebrow primary">结论摘要</div>
-                    <h3>${escapeHtml(model.summaryText)}</h3>
+                    <h3>${formatInlineMarkup(summaryValue)}</h3>
                 </article>
                 <article class="summary-card">
                     <div class="eyebrow warning">核心洞察</div>
-                    <h3>${escapeHtml(model.insights[0] || '等待解析')}</h3>
+                    <h3>${formatInlineMarkup(model.insights[0] || '等待解析')}</h3>
                 </article>
                 <article class="summary-card">
                     <div class="eyebrow danger">主要风险</div>
-                    <h3>${escapeHtml(model.risks[0] || '等待解析')}</h3>
+                    <h3>${formatInlineMarkup(model.risks[0] || '等待解析')}</h3>
                 </article>
                 <article class="summary-card">
                     <div class="eyebrow success">建议动作</div>
-                    <h3>${escapeHtml(model.actions[0] || '等待解析')}</h3>
+                    <h3>${formatInlineMarkup(model.actions[0] || '等待解析')}</h3>
+                </article>
+                <article class="summary-card">
+                    <div class="eyebrow primary">关键假设</div>
+                    <h3>${formatInlineMarkup((model.assumptions && model.assumptions[0]) || '待补充')}</h3>
+                </article>
+                <article class="summary-card">
+                    <div class="eyebrow warning">结论信心</div>
+                    <h3>${formatInlineMarkup(model.confidenceLevel || '中')}</h3>
                 </article>
             `;
         }
@@ -686,7 +1011,7 @@
                 return `
                     <div class="action-item">
                         <span class="${priority.className}">${priority.label}</span>
-                        <div class="text-sm leading-7 text-slate-700">${escapeHtml(action)}</div>
+                        <div class="text-sm leading-7 text-slate-700">${formatInlineMarkup(action)}</div>
                     </div>
                 `;
             }).join('');
@@ -701,22 +1026,76 @@
 
         function renderEvidence(model) {
             const evidenceList = document.getElementById('evidence-list');
-            const html = model.evidence.map(item => `
+            const normalizedItems = (model.evidence || [])
+                .map(item => normalizeEvidenceItem(item, model.confidenceLevel))
+                .filter(item => item.content);
+            const html = normalizedItems.map(item => `
                 <div class="evidence-item">
-                    <span class="priority-badge priority-low">证据</span>
-                    <div class="text-sm leading-7 text-slate-700">${escapeHtml(item)}</div>
+                    <span class="priority-badge priority-low">${escapeHtml(item.strengthLevel || model.confidenceLevel || '证据')}</span>
+                    <div class="text-sm leading-7 text-slate-700">
+                        <div class="font-semibold text-slate-800">${escapeHtml(item.title)}</div>
+                        ${item.sourceLabel ? `<div class="text-xs text-slate-500 mt-1">${escapeHtml(item.sourceLabel)}</div>` : ''}
+                        <div class="mt-1">${formatInlineMarkup(item.content)}</div>
+                    </div>
                 </div>
             `).join('');
 
             evidenceList.innerHTML = html || '<div class="text-sm text-slate-500">当前报告中缺少可直接引用的原始片段。</div>';
-            document.getElementById('metric-evidence-count').textContent = String(model.evidence.length);
+            document.getElementById('metric-evidence-count').textContent = String(normalizedItems.length);
+        }
+
+        function renderSourceBreakdown(model) {
+            const container = document.getElementById('source-breakdown-list');
+            const items = (model.sourceBreakdown || []).map(item => `
+                <div class="evidence-item">
+                    <span class="priority-badge priority-low">${escapeHtml(item.source_type === 'external' ? '外部' : '讨论')}</span>
+                    <div class="text-sm leading-7 text-slate-700">
+                        <div class="font-semibold text-slate-800">${escapeHtml(item.section || '未命名来源')}</div>
+                        <div>${formatInlineMarkup(item.summary || '暂无摘要')}</div>
+                        ${item.strength_level ? `<div class="text-xs text-slate-500 mt-1">强度：${escapeHtml(item.strength_level)}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            container.innerHTML = items || '<div class="text-sm text-slate-500">当前暂无可拆解的来源信息。</div>';
+        }
+
+        async function loadResearchRounds(scenarioId) {
+            const container = document.getElementById('research-round-list');
+            if (!container) return;
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/research-rounds`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    container.innerHTML = '<div class="text-sm text-red-500">研究轮次加载失败</div>';
+                    return;
+                }
+                const rounds = await response.json();
+                if (!Array.isArray(rounds) || !rounds.length) {
+                    container.innerHTML = '<div class="text-sm text-slate-500">还没有历史研究轮次。</div>';
+                    return;
+                }
+                container.innerHTML = rounds.slice(0, 5).map(item => `
+                    <div class="evidence-item">
+                        <span class="priority-badge priority-low">第 ${item.round_index} 轮</span>
+                        <div class="text-sm leading-7 text-slate-700">
+                            <div class="font-semibold text-slate-800">${escapeHtml(item.summary || '暂无摘要')}</div>
+                            <div class="text-xs text-slate-500 mt-1">${item.created_at ? new Date(item.created_at).toLocaleString('zh-CN') : '未知时间'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<div class="text-sm text-red-500">研究轮次加载失败</div>';
+            }
         }
 
         function renderSectionNav(sections) {
             const nav = document.getElementById('section-nav');
-            nav.innerHTML = sections.map((section, index) => `
+            const sourceChips = (sections || []).map((section, index) => `
                 <a class="nav-chip" href="#section-${index + 1}">${escapeHtml(section.title)}</a>
             `).join('');
+            nav.innerHTML = sourceChips + ((sections && sections.length) ? '' : '<span class="nav-chip">暂无章节</span>');
         }
 
         function renderMarkdownLike(lines) {
@@ -724,6 +1103,7 @@
             let inList = false;
             let inOrderedList = false;
             let inTable = false;
+            let tableHeaderRendered = false;
 
             const closeList = () => {
                 if (inList) {
@@ -738,8 +1118,9 @@
 
             const closeTable = () => {
                 if (inTable) {
-                    html.push('</tbody></table>');
+                    html.push('</tbody></table></div>');
                     inTable = false;
+                    tableHeaderRendered = false;
                 }
             };
 
@@ -758,10 +1139,15 @@
                         continue;
                     }
                     if (!inTable) {
-                        html.push('<table><tbody>');
+                        html.push('<div class="report-table-wrap"><table>');
                         inTable = true;
                     }
-                    html.push(`<tr>${cells.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`);
+                    if (!tableHeaderRendered) {
+                        html.push(`<thead><tr>${cells.map(cell => `<th>${escapeHtml(cell)}</th>`).join('')}</tr></thead><tbody>`);
+                        tableHeaderRendered = true;
+                    } else {
+                        html.push(`<tr>${cells.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`);
+                    }
                     continue;
                 } else {
                     closeTable();
@@ -773,7 +1159,7 @@
                         html.push('<ul>');
                         inList = true;
                     }
-                    html.push(`<li>${escapeHtml(line.replace(/^[-*]\s+/, ''))}</li>`);
+                    html.push(`<li>${formatInlineMarkup(line.replace(/^[-*]\s+/, ''))}</li>`);
                     continue;
                 }
 
@@ -783,12 +1169,24 @@
                         html.push('<ol>');
                         inOrderedList = true;
                     }
-                    html.push(`<li>${escapeHtml(line.replace(/^\d+\.\s+/, ''))}</li>`);
+                    html.push(`<li>${formatInlineMarkup(line.replace(/^\d+\.\s+/, ''))}</li>`);
+                    continue;
+                }
+
+                if (/^\*\*\d+[）\)]/.test(line) && /\*\*$/.test(line)) {
+                    closeList();
+                    html.push(`<p class="report-step-title">${formatInlineMarkup(line)}</p>`);
+                    continue;
+                }
+
+                if (/^\d+[）\)]\s+/.test(line)) {
+                    closeList();
+                    html.push(`<p class="report-step-title"><strong>${formatInlineMarkup(line)}</strong></p>`);
                     continue;
                 }
 
                 closeList();
-                html.push(`<p>${escapeHtml(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`);
+                html.push(`<p>${formatInlineMarkup(line)}</p>`);
             }
 
             closeList();
@@ -808,19 +1206,22 @@
         }
 
         function renderReport(report) {
-            const model = inferDecisionModel(report.content || '');
+            const model = mergeStructuredModel(inferDecisionModel(report.content || '', report.report_title || ''), report);
             const generatedAt = report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知';
+            const executiveSummary = safeSummaryText(stripInlineMarkup(report.executive_summary || ''), '');
+            const heroSummary = safeSummaryText(executiveSummary || stripInlineMarkup(model.summaryText), '当前摘要暂不可用。通常是模型调用失败或余额不足，建议补充额度后重新生成报告。');
 
             document.getElementById('report-title').textContent = report.report_title || '分析报告';
             document.getElementById('topbar-meta').textContent = `报告生成时间：${generatedAt}`;
-            document.getElementById('hero-summary').textContent = model.summaryText;
-            document.getElementById('metric-status').textContent = '已生成';
+            document.getElementById('hero-summary').textContent = heroSummary;
+            document.getElementById('metric-status').textContent = `已生成 · 信心${model.confidenceLevel || '中'}`;
             document.getElementById('metric-generated-at').textContent = generatedAt;
-            document.getElementById('metric-priority').textContent = model.actions[0] || '待补充';
+            document.getElementById('metric-priority').textContent = stripInlineMarkup(model.actions[0] || '待补充');
 
-            renderSummary(model);
+            renderSummary(model, report.executive_summary || '');
             renderPriorityActions(model);
             renderEvidence(model);
+            renderSourceBreakdown(model);
             renderSections(model);
             renderSectionNav(model.sections);
             setViewState('ready');
@@ -834,9 +1235,18 @@
                 return;
             }
 
+            syncBackButtonLabel();
+            reportProgressValue = 0;
             setViewState('loading');
+            setReportProgress(8, '正在准备报告内容...');
+            loadScenarioContext(scenarioId);
 
             try {
+                if (shouldForceRegenerate()) {
+                    await generateReport(scenarioId);
+                    return;
+                }
+
                 const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/report`, {
                     method: 'GET',
                     credentials: 'include'
@@ -856,6 +1266,7 @@
 
                 const report = await response.json();
                 renderReport(report);
+                loadResearchRounds(scenarioId);
             } catch (error) {
                 document.getElementById('error-message').textContent = error.message || '网络错误，请稍后重试。';
                 setViewState('error');
@@ -863,25 +1274,93 @@
         }
 
         async function generateReport(scenarioId) {
-            document.getElementById('loading-text').textContent = '报告不存在，正在自动生成，请稍候...';
+            reportProgressValue = 0;
+            setViewState('loading');
+            setReportProgress(12, '正在连接报告生成服务...');
 
             try {
-                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/generate-report`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' }
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/generate-report/stream`, {
+                    method: 'GET',
+                    credentials: 'include'
                 });
 
                 if (!response.ok) {
                     if (response.status === 400) {
-                        const errorData = await response.json();
+                        const errorData = await response.json().catch(() => ({}));
                         throw new Error(errorData.error || '请先进行对话模拟。');
+                    }
+                    if (response.status === 401) {
+                        throw new Error('请先登录后再查看报告。');
                     }
                     throw new Error(`生成报告失败，错误码 ${response.status}`);
                 }
 
-                const report = await response.json();
-                renderReport(report);
+                if (!response.body) {
+                    throw new Error('当前浏览器不支持流式报告进度。');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let reportData = null;
+                let reportError = null;
+                const phaseFallbackMap = {
+                    prepare_inputs: '正在准备讨论材料...',
+                    discussion_summary: '正在生成讨论摘要...',
+                    fallback_to_direct_report: '摘要失败，正在切换到直接报告生成...',
+                    section_summary: '正在生成核心观点总结...',
+                    section_analysis: '正在生成关键讨论点分析...',
+                    section_divergence: '正在生成主要分歧点归纳...',
+                    section_recommendation: '正在生成建议与下一步...',
+                    fallback_started: 'AI 结果不足，正在切换保底报告...',
+                    finalize_report: '正在整理并保存报告...'
+                };
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed || !trimmed.startsWith('data: ')) {
+                            continue;
+                        }
+
+                        try {
+                            const event = JSON.parse(trimmed.slice(6));
+                            if (event.type === 'progress') {
+                                const pct = event.pct || 0;
+                                const phaseText = event.phase || phaseFallbackMap[event.stage_code] || '正在生成报告...';
+                                setReportProgress(pct, phaseText);
+                            } else if (event.type === 'error') {
+                                reportError = event.error || '生成报告失败';
+                            } else if (event.type === 'done') {
+                                reportData = event.report;
+                            }
+                        } catch (error) {
+                            console.warn('报告进度解析失败:', error, line);
+                        }
+                    }
+                }
+
+                if (reportError) {
+                    throw new Error(reportError);
+                }
+
+                if (!reportData) {
+                    throw new Error('未收到报告结果。');
+                }
+
+                setReportProgress(100, '报告生成完成，正在载入内容...');
+                clearForceRegenerateFlag();
+                renderReport(reportData);
+                loadResearchRounds(scenarioId);
                 showToast('报告生成成功', 'success');
             } catch (error) {
                 document.getElementById('error-message').textContent = error.message || '生成报告失败，请重试。';
@@ -908,8 +1387,11 @@
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || '导出 PDF 失败');
+                    if (response.status === 400) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || '导出 PDF 失败');
+                    }
+                    throw new Error(`导出 PDF 失败，错误码 ${response.status}`);
                 }
 
                 const blob = await response.blob();
@@ -930,8 +1412,164 @@
             }
         }
 
+        async function downloadReportFile(format, buttonId, loadingText, fallbackName) {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                showToast('无法获取场景ID', 'error');
+                return;
+            }
+
+            const button = document.getElementById(buttonId);
+            const originalText = button.innerHTML;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i>${loadingText}`;
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/report/${format}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `导出 ${format.toUpperCase()} 失败`);
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const contentDisposition = response.headers.get('Content-Disposition') || '';
+                const match = contentDisposition.match(/filename="?([^"]+)"?/i);
+                a.href = url;
+                a.download = match ? decodeURIComponent(match[1]) : fallbackName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showToast(`${format.toUpperCase()} 导出成功`, 'success');
+            } catch (error) {
+                showToast(error.message || '导出失败，请重试', 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        async function exportTxt() {
+            const fallbackName = `分析报告_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.txt`;
+            await downloadReportFile('txt', 'export-txt-btn', '导出中...', fallbackName);
+        }
+
+        async function exportDocx() {
+            const fallbackName = `分析报告_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.docx`;
+            await downloadReportFile('docx', 'export-docx-btn', '导出中...', fallbackName);
+        }
+
+        async function generatePresentation() {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                showToast('无法获取场景ID', 'error');
+                return;
+            }
+
+            const button = document.getElementById('generate-presentation-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>生成中...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/presentation/generate`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '生成演示稿失败');
+                }
+
+                showToast('演示稿生成成功，现在可以打开播放页', 'success');
+            } catch (error) {
+                showToast(error.message || '生成演示稿失败，请重试', 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        async function exportPptx() {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                showToast('无法获取场景ID', 'error');
+                return;
+            }
+
+            const button = document.getElementById('export-pptx-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>导出中...';
+            button.disabled = true;
+
+            const downloadPptx = async () => {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/presentation/pptx`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                return response;
+            };
+
+            try {
+                let response = await downloadPptx();
+                if (response.status === 404) {
+                    const generateResponse = await fetch(`${API_BASE}/scenarios/${scenarioId}/presentation/generate`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    if (!generateResponse.ok) {
+                        const errorData = await generateResponse.json().catch(() => ({}));
+                        throw new Error(errorData.error || '生成演示稿失败，无法导出 PPTX');
+                    }
+                    response = await downloadPptx();
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || '导出 PPTX 失败');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const contentDisposition = response.headers.get('Content-Disposition') || '';
+                const match = contentDisposition.match(/filename="?([^"]+)"?/i);
+                a.href = url;
+                a.download = match ? decodeURIComponent(match[1]) : `分析演示稿_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.pptx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showToast('PPTX 导出成功', 'success');
+            } catch (error) {
+                showToast(error.message || '导出 PPTX 失败，请重试', 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        function openPresentation() {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                showToast('无法获取场景ID', 'error');
+                return;
+            }
+
+            window.location.href = `/presentation?scenario_id=${encodeURIComponent(scenarioId)}`;
+        }
+
         document.getElementById('back-btn').addEventListener('click', () => {
-            window.location.href = '/';
+            window.location.href = buildHomeReturnUrl();
         });
 
         document.getElementById('print-btn').addEventListener('click', () => {
@@ -939,6 +1577,11 @@
         });
 
         document.getElementById('export-pdf-btn').addEventListener('click', exportPdf);
+        document.getElementById('export-txt-btn').addEventListener('click', exportTxt);
+        document.getElementById('export-docx-btn').addEventListener('click', exportDocx);
+        document.getElementById('export-pptx-btn').addEventListener('click', exportPptx);
+        document.getElementById('generate-presentation-btn').addEventListener('click', generatePresentation);
+        document.getElementById('open-presentation-btn').addEventListener('click', openPresentation);
         document.getElementById('retry-btn').addEventListener('click', loadReport);
         document.addEventListener('DOMContentLoaded', loadReport);
     </script>

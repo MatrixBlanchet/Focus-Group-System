@@ -3,3 +3,5 @@ Flask-SQLAlchemy==3.1.1
 flask-cors==4.0.0
 requests==2.31.0
 reportlab==4.0.0
+python-docx==1.1.2
+python-pptx==0.6.23

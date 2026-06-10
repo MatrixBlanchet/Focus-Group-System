@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱注册 - 焦点小组系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --surface: rgba(255, 255, 255, 0.9);
+            --surface-strong: rgba(255, 255, 255, 0.98);
+            --border-soft: rgba(148, 163, 184, 0.18);
+            --text-strong: #0f172a;
+            --text-muted: #64748b;
+            --brand: #2563eb;
+            --brand-strong: #1d4ed8;
+            --brand-soft: rgba(37, 99, 235, 0.1);
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.12);
+            --shadow-md: 0 18px 38px rgba(15, 23, 42, 0.08);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            color: var(--text-strong);
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.16), transparent 28%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 24%),
+                radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.12), transparent 26%),
+                linear-gradient(135deg, #f8fafc 0%, #eef4ff 45%, #f8fafc 100%);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 360px;
+            height: 360px;
+            border-radius: 999px;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        body::before {
+            top: -120px;
+            right: -120px;
+            background: rgba(59, 130, 246, 0.18);
+        }
+
+        body::after {
+            bottom: -140px;
+            left: -110px;
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .shell-card {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border-soft);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .register-layout {
+            display: grid;
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        .hero-metrics {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .workspace-hero {
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(99, 102, 241, 0.92)),
+                radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 32%);
+            color: white;
+        }
+
+        .workspace-hero::after {
+            content: "";
+            position: absolute;
+            inset: auto -10% -28% auto;
+            width: 320px;
+            height: 320px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 66%);
+            pointer-events: none;
+        }
+
+        .decision-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.48rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(12px);
+        }
+
+        .decision-chip::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
+            opacity: 0.9;
+        }
+
+        .decision-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94));
+            border: 1px solid rgba(226, 232, 240, 0.88);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mini-metric {
+            min-height: 118px;
+            padding: 1rem 1.1rem;
+            border-radius: 1.35rem;
+        }
+
+        .mini-metric .label {
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .mini-metric .value {
+            margin-top: 0.25rem;
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #0f172a;
+        }
+
+        .mini-metric p {
+            margin-top: 0.75rem;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .feature-list {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .hero-copy-title {
+            line-height: 1.5;
+        }
+
+        .hero-copy-body {
+            line-height: 3rem;
+        }
+
+        .hero-metric-copy {
+            line-height: 2.25rem;
+        }
+
+        .hero-feature-title {
+            line-height: 1.5;
+        }
+
+        .hero-feature-copy {
+            line-height: 2.625rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            padding: 0.95rem 1rem;
+            border-radius: 1.25rem;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-icon {
+            width: 2.4rem;
+            height: 2.4rem;
+            border-radius: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.92rem;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .feature-item p {
+            color: rgba(239, 246, 255, 0.9);
+        }
+
+        .form-panel {
+            background: rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(255, 255, 255, 0.62);
+            box-shadow: 0 26px 62px rgba(15, 23, 42, 0.08);
+            backdrop-filter: blur(20px);
+        }
+
+        .status-card {
+            border-radius: 1.25rem;
+            border: 1px solid rgba(37, 99, 235, 0.14);
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.92), rgba(255, 255, 255, 0.96));
+            box-shadow: 0 16px 32px rgba(37, 99, 235, 0.08);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.88rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            color: var(--brand-strong);
+        }
+
+        .status-pill::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
+        }
+
+        .field-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.7rem;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .field-hint {
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .input-shell {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            border-radius: 1.15rem;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            background: rgba(255, 255, 255, 0.96);
+            padding: 0.95rem 1rem;
+            font-size: 0.95rem;
+            color: #0f172a;
+            outline: none;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+        }
+
+        .input-field::placeholder {
+            color: #94a3b8;
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-field.with-action {
+            padding-right: 4.9rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 0.85rem;
+            transform: translateY(-50%);
+            border: none;
+            background: rgba(148, 163, 184, 0.1);
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0.45rem 0.7rem;
+            border-radius: 999px;
+            transition: all 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            background: rgba(59, 130, 246, 0.12);
+            color: #1d4ed8;
+        }
+
+        .code-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 0.8rem;
+            align-items: stretch;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            border: none;
+            border-radius: 1.15rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 22px 40px rgba(37, 99, 235, 0.28);
+        }
+
+        .btn-secondary {
+            min-width: 132px;
+            padding: 0 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #334155;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #1d4ed8;
+        }
+
+        .btn-primary:disabled,
+        .btn-secondary:disabled {
+            opacity: 1;
+            cursor: not-allowed;
+            transform: none;
+            background: #e5e7eb;
+            color: #94a3b8;
+            border-color: #d1d5db;
+            box-shadow: none;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            font-size: 0.98rem;
+        }
+
+        .security-strip {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .security-item {
+            border-radius: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(248, 250, 252, 0.88);
+            padding: 0.85rem 0.9rem;
+            font-size: 0.78rem;
+            color: #475569;
+            text-align: center;
+        }
+
+        .debug-code {
+            margin-top: 0.75rem;
+            border-radius: 1rem;
+            border: 1px dashed rgba(37, 99, 235, 0.24);
+            background: rgba(239, 246, 255, 0.76);
+            padding: 0.85rem 1rem;
+            font-size: 0.78rem;
+            color: #1d4ed8;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: min(420px, calc(100vw - 32px));
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+            z-index: 1000;
+            animation: slideIn 0.25s ease-out;
+        }
+
+        .toast-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .toast-error { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .toast-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .toast-info { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.42);
+            backdrop-filter: blur(6px);
+            color: white;
+            z-index: 1000;
+        }
+
+        .loading-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 1rem 1.2rem;
+            border-radius: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(15, 23, 42, 0.82);
+            box-shadow: 0 22px 40px rgba(15, 23, 42, 0.22);
+        }
+
+        .page-enter {
+            animation: pageEnter 0.55s ease-out both;
+        }
+
+        .stagger-1 { animation-delay: 0.04s; }
+        .stagger-2 { animation-delay: 0.1s; }
+        .stagger-3 { animation-delay: 0.16s; }
+        .stagger-4 { animation-delay: 0.22s; }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .hero-metrics {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .register-layout {
+                grid-template-columns: 1.08fr 0.92fr;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .security-strip {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 767px) {
+            body {
+                padding: 1rem 0;
+            }
+
+            .code-row,
+            .security-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-secondary {
+                min-height: 54px;
+            }
+        }
+    </style>
+</head>
+<body class="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+    <main class="register-layout relative z-10 mx-auto w-full max-w-6xl">
+        <section class="shell-card workspace-hero rounded-[2rem] p-7 sm:p-9 lg:p-10 page-enter stagger-1">
+            <div class="decision-chip">邮箱密码注册已开启</div>
+
+            <div class="mt-7 max-w-xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.22em] text-blue-100/80">Focus Group Workspace</p>
+                <h1 class="hero-copy-title mt-3 text-4xl font-black tracking-tight sm:text-[2.9rem]">
+                    用一个账号，把访谈、讨论和报告串成一条工作流
+                </h1>
+                <p class="hero-copy-body mt-5 text-base text-blue-50/88 sm:text-[1.02rem]">
+                    注册后即可进入你的焦点小组工作台，创建讨论场景、生成参与者人设、发起深度访谈，并在同一处查看结构化分析报告。
+                </p>
+            </div>
+
+            <div class="hero-metrics mt-8">
+                <article class="decision-card mini-metric page-enter stagger-2">
+                    <div class="label">注册方式</div>
+                    <div class="value">3 步完成</div>
+                    <p class="hero-metric-copy mt-3 text-sm text-slate-600">填写用户名、邮箱和密码，完成注册后直接进入系统。</p>
+                </article>
+                <article class="decision-card mini-metric page-enter stagger-3">
+                    <div class="label">认证方式</div>
+                    <div class="value">邮箱密码</div>
+                    <p class="hero-metric-copy mt-3 text-sm text-slate-600">当前版本已恢复邮箱验证码验证，支持注册确认、验证码登录与密码找回。</p>
+                </article>
+                <article class="decision-card mini-metric page-enter stagger-4">
+                    <div class="label">进入效率</div>
+                    <div class="value">即注册即登录</div>
+                    <p class="hero-metric-copy mt-3 text-sm text-slate-600">注册成功后自动建立登录态，减少重复操作。</p>
+                </article>
+            </div>
+
+            <div class="mt-8 feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">01</div>
+                    <div>
+                        <h2 class="hero-feature-title text-base font-bold">统一的研究入口</h2>
+                        <p class="hero-feature-copy mt-1.5 text-sm text-blue-50/84">
+                            从注册页开始延续主页的浅色工作台风格，让用户从进入系统的第一步就感受到同一套产品语言。
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">02</div>
+                    <div>
+                        <h2 class="hero-feature-title text-base font-bold">更直接的注册流程</h2>
+                        <p class="hero-feature-copy mt-1.5 text-sm text-blue-50/84">
+                            当前阶段先保留最小认证链路，直接使用用户名、邮箱和密码完成注册，减少等待和阻塞。
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">03</div>
+                    <div>
+                        <h2 class="hero-feature-title text-base font-bold">面向移动端的细节优化</h2>
+                        <p class="hero-feature-copy mt-1.5 text-sm text-blue-50/84">
+                            页面在手机上会自动堆叠成单列，按钮和输入区域保持良好点击面积，不会出现挤压式布局。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="shell-card form-panel rounded-[2rem] p-6 sm:p-8 lg:p-9 page-enter stagger-2">
+            <div class="status-card p-5">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-semibold tracking-[0.18em] text-blue-700 uppercase">Create Account</p>
+                        <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900">创建你的研究账号</h2>
+                        <p class="mt-2 text-sm leading-7 text-slate-600">
+                            输入邮箱验证码后即可完成注册。注册成功后将自动返回主页，并保持登录状态。
+                        </p>
+                    </div>
+                    <div class="status-pill">状态良好</div>
+                </div>
+            </div>
+
+            <form id="register-form" class="mt-7 space-y-5">
+                <div>
+                    <label for="register-username" class="field-label">
+                        <span>用户名</span>
+                        <span class="field-hint">建议 4-20 个字符</span>
+                    </label>
+                    <div class="input-shell">
+                        <input
+                            type="text"
+                            id="register-username"
+                            class="input-field"
+                            placeholder="例如：research_lead"
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label for="register-email" class="field-label">
+                        <span>邮箱地址</span>
+                        <span class="field-hint">用于登录和接收通知</span>
+                    </label>
+                    <div class="input-shell">
+                        <input
+                            type="email"
+                            id="register-email"
+                            class="input-field"
+                            placeholder="name@example.com"
+                            autocomplete="email"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label for="register-code" class="field-label">
+                        <span>验证码</span>
+                        <span class="field-hint">验证码 10 分钟内有效</span>
+                    </label>
+                    <div class="code-row">
+                        <input
+                            type="text"
+                            id="register-code"
+                            class="input-field"
+                            placeholder="请输入 6 位验证码"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                        >
+                        <button type="button" id="register-send-code-btn" class="btn-secondary">
+                            获取验证码
+                        </button>
+                    </div>
+                    <p id="register-test-code" class="debug-code hidden"></p>
+                </div>
+
+                <div>
+                    <label for="register-password" class="field-label">
+                        <span>设置密码</span>
+                        <span class="field-hint">至少 8 位，包含字母和数字</span>
+                    </label>
+                    <div class="input-shell">
+                        <input
+                            type="password"
+                            id="register-password"
+                            class="input-field with-action"
+                            placeholder="请输入登录密码"
+                            autocomplete="new-password"
+                        >
+                        <button type="button" class="password-toggle" data-target="register-password">显示</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="register-password-confirm" class="field-label">
+                        <span>确认密码</span>
+                        <span class="field-hint">请再次输入相同密码</span>
+                    </label>
+                    <div class="input-shell">
+                        <input
+                            type="password"
+                            id="register-password-confirm"
+                            class="input-field with-action"
+                            placeholder="再次输入密码"
+                            autocomplete="new-password"
+                        >
+                        <button type="button" class="password-toggle" data-target="register-password-confirm">显示</button>
+                    </div>
+                </div>
+
+                <div class="security-strip">
+                    <div class="security-item">邮箱验证码注册</div>
+                    <div class="security-item">成功后自动登录</div>
+                    <div class="security-item">支持返回主页登录</div>
+                </div>
+
+                <button type="submit" id="register-submit-btn" class="btn-primary submit-button">
+                    创建账号并进入系统
+                </button>
+
+                <div class="flex flex-col gap-3 border-t border-slate-200/80 pt-5 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+                    <p>已经有账号？直接返回主页登录即可。</p>
+                    <a
+                        href="index.html"
+                        class="inline-flex items-center gap-2 font-semibold text-blue-600 transition hover:text-blue-700"
+                    >
+                        返回登录
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <div id="toast-container"></div>
+
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-card">
+            <div class="h-6 w-6 rounded-full border-4 border-white/70 border-t-transparent animate-spin"></div>
+            <span id="loading-text">处理中...</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        const codeTimers = {};
+        let registerSubmitting = false;
+
+        document.querySelectorAll('.password-toggle').forEach((button) => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const showing = input.type === 'text';
+                input.type = showing ? 'password' : 'text';
+                button.textContent = showing ? '显示' : '隐藏';
+            });
+        });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+
+        function showLoading(text = '处理中...') {
+            document.getElementById('loading-text').textContent = text;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
+
+        function setRegisterSubmitting(isSubmitting) {
+            registerSubmitting = isSubmitting;
+            const submitBtn = document.getElementById('register-submit-btn');
+            if (!submitBtn) return;
+            submitBtn.disabled = isSubmitting;
+        }
+
+        async function apiFetch(url, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                credentials: 'include',
+                ...options
+            };
+
+            if (options.body) {
+                defaultOptions.body = JSON.stringify(options.body);
+            }
+
+            return fetch(url, defaultOptions);
+        }
+
+        async function safeJson(response) {
+            try {
+                return await response.json();
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function startCodeCountdown(btnId, seconds) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+
+            if (codeTimers[btnId]) {
+                clearInterval(codeTimers[btnId]);
+            }
+
+            btn.disabled = true;
+            btn.textContent = `${seconds}秒后重试`;
+
+            let count = seconds;
+            codeTimers[btnId] = setInterval(() => {
+                count -= 1;
+                if (count <= 0) {
+                    clearInterval(codeTimers[btnId]);
+                    delete codeTimers[btnId];
+                    btn.disabled = false;
+                    btn.textContent = '获取验证码';
+                    return;
+                }
+                btn.textContent = `${count}秒后重试`;
+            }, 1000);
+        }
+
+        async function sendRegisterCode() {
+            const email = document.getElementById('register-email').value.trim();
+            const debugNode = document.getElementById('register-test-code');
+            debugNode.classList.add('hidden');
+            debugNode.textContent = '';
+
+            if (!email) {
+                showToast('请先填写邮箱地址', 'warning');
+                return;
+            }
+
+            try {
+                const response = await apiFetch(`${API_BASE}/auth/send-code`, {
+                    method: 'POST',
+                    body: { target: email, purpose: 'register' }
+                });
+                const data = await safeJson(response);
+
+                if (!response.ok) {
+                    showToast(data.error || data.message || '验证码发送失败', 'error');
+                    return;
+                }
+
+                startCodeCountdown('register-send-code-btn', data.cooldown_seconds || 60);
+                showToast(data.message || '验证码已发送', 'success');
+                if (data.test_code) {
+                    debugNode.textContent = `测试验证码：${data.test_code}`;
+                    debugNode.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('发送注册验证码失败:', error);
+                showToast('验证码发送失败，请检查网络连接', 'error');
+            }
+        }
+
+        async function register() {
+            if (registerSubmitting) {
+                return;
+            }
+
+            const username = document.getElementById('register-username').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const code = document.getElementById('register-code').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-password-confirm').value;
+
+            if (!username || !email || !code || !password || !confirmPassword) {
+                showToast('请完整填写注册信息', 'warning');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast('两次输入的密码不一致', 'warning');
+                return;
+            }
+
+            setRegisterSubmitting(true);
+            showLoading('注册中...');
+            let registrationSucceeded = false;
+
+            try {
+                const response = await apiFetch(`${API_BASE}/auth/register-with-code`, {
+                    method: 'POST',
+                    body: { target: email, code, username, password }
+                });
+                const data = await safeJson(response);
+
+                if (!response.ok) {
+                    showToast(data.error || '注册失败', 'error');
+                    return;
+                }
+
+                registrationSucceeded = true;
+                showToast('注册成功，正在进入系统', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html?panel=profile';
+                }, 1200);
+            } catch (error) {
+                console.error('注册失败:', error);
+                showToast('注册失败，请检查网络连接', 'error');
+            } finally {
+                hideLoading();
+                if (!registrationSucceeded) {
+                    setRegisterSubmitting(false);
+                }
+            }
+        }
+
+        document.getElementById('register-send-code-btn').addEventListener('click', sendRegisterCode);
+        document.getElementById('register-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            register();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会议室 | Focus Group System</title>
+    <style>
+        :root {
+            --bg: #eef3f8;
+            --bg-soft: #f8fbfd;
+            --panel: rgba(255, 255, 255, 0.9);
+            --panel-strong: rgba(255, 255, 255, 0.96);
+            --line: rgba(96, 129, 161, 0.18);
+            --line-strong: rgba(59, 88, 115, 0.24);
+            --text: #17324a;
+            --muted: #637c93;
+            --accent: #0f5f8d;
+            --accent-deep: #0a4366;
+            --accent-soft: rgba(15, 95, 141, 0.14);
+            --success: #1f7a58;
+            --warning: #a36910;
+            --danger: #b04949;
+            --shadow: 0 24px 60px rgba(22, 44, 66, 0.14);
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(19, 100, 145, 0.16), transparent 32%),
+                radial-gradient(circle at right 18%, rgba(56, 135, 187, 0.12), transparent 28%),
+                linear-gradient(180deg, #f8fbfd 0%, #edf2f8 52%, #edf1f5 100%);
+            font-family: "Aptos", "PingFang SC", "Microsoft YaHei UI", sans-serif;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(23, 50, 74, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(23, 50, 74, 0.02) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 85%);
+        }
+
+        h1, h2, h3, .display {
+            font-family: "Georgia", "Noto Serif SC", "Songti SC", serif;
+            letter-spacing: 0.02em;
+        }
+
+        button, input, textarea {
+            font: inherit;
+        }
+
+        .page-shell {
+            width: min(1500px, calc(100vw - 40px));
+            margin: 0 auto;
+            padding: 30px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(145deg, rgba(13, 79, 120, 0.95), rgba(21, 121, 170, 0.88));
+            color: white;
+            box-shadow: 0 18px 34px rgba(15, 95, 141, 0.28);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .brand-copy h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .brand-copy p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 13px;
+            backdrop-filter: blur(14px);
+        }
+
+        .chip strong {
+            color: var(--text);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr) 320px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .panel-inner {
+            padding: 24px;
+        }
+
+        .sidebar-stack,
+        .right-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .section-title h2,
+        .section-title h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .section-title span {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        .room-summary {
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(180deg, rgba(240, 247, 252, 0.96), rgba(255, 255, 255, 0.92));
+            border: 1px solid rgba(68, 112, 146, 0.16);
+        }
+
+        .room-summary h2 {
+            margin: 0 0 8px;
+            font-size: 26px;
+            line-height: 1.2;
+        }
+
+        .room-summary p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .room-meta-grid {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .meta-card {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(68, 112, 146, 0.14);
+        }
+
+        .meta-card .label {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .meta-card .value {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        label.field {
+            display: grid;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            border: 1px solid rgba(72, 102, 132, 0.18);
+            border-radius: 16px;
+            padding: 13px 14px;
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--text);
+            outline: none;
+            resize: vertical;
+            min-height: 50px;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        }
+
+        textarea {
+            min-height: 104px;
+            line-height: 1.65;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: rgba(15, 95, 141, 0.48);
+            box-shadow: 0 0 0 4px rgba(15, 95, 141, 0.12);
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 16px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.52;
+            transform: none;
+        }
+
+        .btn-primary {
+            color: white;
+            background: linear-gradient(145deg, #0d5c88, #1673a7);
+            box-shadow: 0 16px 28px rgba(15, 95, 141, 0.22);
+        }
+
+        .btn-secondary {
+            color: var(--accent-deep);
+            background: rgba(15, 95, 141, 0.1);
+            border: 1px solid rgba(15, 95, 141, 0.12);
+        }
+
+        .btn-danger {
+            color: white;
+            background: linear-gradient(145deg, #954444, #b55454);
+            box-shadow: 0 14px 26px rgba(176, 73, 73, 0.22);
+        }
+
+        .btn-ghost {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid var(--line);
+        }
+
+        .timeline-panel {
+            min-height: 760px;
+        }
+
+        .hero-strip {
+            padding: 26px 28px 22px;
+            border-bottom: 1px solid var(--line);
+            background:
+                linear-gradient(120deg, rgba(11, 78, 118, 0.92), rgba(27, 112, 157, 0.84)),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+            color: white;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .hero-strip .eyebrow {
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            opacity: 0.76;
+            margin-bottom: 10px;
+        }
+
+        .hero-strip h2 {
+            margin: 0;
+            font-size: 32px;
+            line-height: 1.15;
+        }
+
+        .hero-strip p {
+            margin: 10px 0 0;
+            max-width: 700px;
+            line-height: 1.7;
+            opacity: 0.92;
+        }
+
+        .phase-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .phase-pill {
+            border-radius: 999px;
+            padding: 9px 14px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            font-size: 13px;
+        }
+
+        .phase-pill.active {
+            background: rgba(255, 255, 255, 0.24);
+            border-color: rgba(255, 255, 255, 0.34);
+        }
+
+        .timeline-body {
+            padding: 24px 28px 28px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .status-banner,
+        .speaker-banner,
+        .empty-card,
+        .auth-card {
+            border-radius: 20px;
+            padding: 18px 20px;
+            background: linear-gradient(180deg, rgba(246, 250, 253, 0.92), rgba(255, 255, 255, 0.96));
+            border: 1px solid rgba(61, 102, 132, 0.14);
+        }
+
+        .speaker-banner {
+            background: linear-gradient(180deg, rgba(233, 242, 249, 0.96), rgba(255, 255, 255, 0.97));
+            transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+        }
+
+        .speaker-banner.is-self {
+            border-color: rgba(31, 122, 88, 0.28);
+            box-shadow: 0 16px 30px rgba(31, 122, 88, 0.1);
+        }
+
+        .speaker-banner.is-ai {
+            border-color: rgba(163, 105, 16, 0.26);
+            box-shadow: 0 16px 30px rgba(163, 105, 16, 0.1);
+        }
+
+        .speaker-banner.is-other {
+            border-color: rgba(15, 95, 141, 0.22);
+        }
+
+        .speaker-banner.attention-pulse,
+        .member-card.attention-pulse,
+        .turn-card.attention-pulse {
+            animation: speakerPulse 1.45s ease;
+        }
+
+        .speaker-banner-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .speaker-banner-status {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 10px;
+            background: rgba(15, 95, 141, 0.1);
+            color: var(--accent-deep);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .status-banner strong,
+        .speaker-banner strong {
+            display: block;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .status-banner p,
+        .speaker-banner p,
+        .empty-card p,
+        .auth-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .feed {
+            display: grid;
+            gap: 12px;
+            min-height: 240px;
+            max-height: 480px;
+            overflow: auto;
+            padding-right: 4px;
+        }
+
+        .feed-item {
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        .feed-item.feed-item-enter {
+            animation: feedItemEnter 0.5s ease;
+        }
+
+        .feed-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(145deg, #0d5c88, #1f80b6);
+        }
+
+        .feed-avatar.system {
+            background: linear-gradient(145deg, #7b8797, #96a5b5);
+        }
+
+        .feed-bubble {
+            border-radius: 18px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(73, 107, 137, 0.12);
+        }
+
+        .feed-bubble.system {
+            background: rgba(238, 245, 250, 0.94);
+        }
+
+        .feed-bubble header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .feed-bubble header strong {
+            font-size: 14px;
+        }
+
+        .feed-bubble header span {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .feed-bubble p {
+            margin: 0;
+            line-height: 1.72;
+            color: #27455f;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .entry-box {
+            display: grid;
+            gap: 12px;
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(247, 250, 253, 0.94);
+            border: 1px solid rgba(65, 103, 133, 0.12);
+        }
+
+        .entry-box textarea {
+            min-height: 110px;
+        }
+
+        .entry-hint {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .member-list,
+        .turn-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .member-card,
+        .turn-card {
+            border-radius: 18px;
+            padding: 14px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(65, 103, 133, 0.12);
+        }
+
+        .member-card.active,
+        .turn-card.active {
+            border-color: rgba(15, 95, 141, 0.34);
+            background: linear-gradient(180deg, rgba(233, 244, 251, 0.96), rgba(255, 255, 255, 0.95));
+            box-shadow: 0 12px 26px rgba(15, 95, 141, 0.08);
+        }
+
+        .member-top,
+        .turn-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .member-top strong,
+        .turn-top strong {
+            font-size: 14px;
+        }
+
+        .meta-tag {
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(15, 95, 141, 0.1);
+            color: var(--accent-deep);
+            font-size: 12px;
+        }
+
+        .member-card p,
+        .turn-card p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .turn-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .turn-mini-btn {
+            flex: 1;
+            border: 1px solid rgba(62, 103, 134, 0.14);
+            background: rgba(247, 250, 253, 0.96);
+            border-radius: 12px;
+            padding: 8px 10px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .turn-mini-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .subtle-note {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .invite-box {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(244, 249, 252, 0.94);
+            border: 1px solid rgba(67, 108, 138, 0.14);
+            line-height: 1.7;
+            word-break: break-all;
+        }
+
+        .help-fab {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: 58px;
+            height: 58px;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            background: linear-gradient(145deg, #0b4f78, #1d84bc);
+            box-shadow: 0 24px 42px rgba(12, 80, 120, 0.34);
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 50;
+        }
+
+        .help-drawer {
+            position: fixed;
+            right: 24px;
+            bottom: 94px;
+            width: min(420px, calc(100vw - 28px));
+            padding: 22px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.97);
+            border: 1px solid rgba(72, 104, 132, 0.16);
+            box-shadow: 0 24px 60px rgba(16, 42, 65, 0.18);
+            backdrop-filter: blur(20px);
+            z-index: 49;
+        }
+
+        .help-drawer.hidden,
+        .hidden {
+            display: none !important;
+        }
+
+        .help-drawer h3 {
+            margin: 0 0 10px;
+            font-size: 22px;
+        }
+
+        .help-drawer ol {
+            margin: 14px 0 0;
+            padding-left: 20px;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .help-drawer li + li {
+            margin-top: 8px;
+        }
+
+        .auth-gate {
+            display: grid;
+            place-items: center;
+            min-height: calc(100vh - 140px);
+        }
+
+        .auth-card {
+            width: min(460px, 100%);
+        }
+
+        .entry-shell {
+            display: grid;
+            gap: 20px;
+        }
+
+        .entry-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) 340px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .entry-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .entry-card {
+            padding: 24px;
+        }
+
+        .entry-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .entry-room-item {
+            border-radius: 18px;
+            padding: 14px 15px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(65, 103, 133, 0.12);
+        }
+
+        .entry-room-item-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .entry-room-item p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .toast {
+            position: fixed;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: rgba(17, 50, 76, 0.92);
+            color: white;
+            box-shadow: 0 20px 36px rgba(12, 34, 53, 0.22);
+            z-index: 80;
+        }
+
+        @keyframes feedItemEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(18px) scale(0.985);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes speakerPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(15, 95, 141, 0.18);
+            }
+            45% {
+                transform: scale(1.01);
+                box-shadow: 0 0 0 14px rgba(15, 95, 141, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(15, 95, 141, 0);
+            }
+        }
+
+        @media (max-width: 1220px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .entry-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-panel {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .page-shell {
+                width: min(100vw - 22px, 100%);
+                padding-top: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-strip h2 {
+                font-size: 26px;
+            }
+
+            .timeline-body,
+            .panel-inner,
+            .hero-strip {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .room-meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="meeting-page-root" class="page-shell">
+        <header class="topbar">
+            <div class="brand-wrap">
+                <div class="brand-mark">议</div>
+                <div class="brand-copy">
+                    <h1>会议室</h1>
+                    <p>先等候与协调，再按固定顺序进入正式讨论。</p>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <div class="chip"><strong id="top-status-text">等待进入</strong></div>
+                <div class="chip">房间码 <strong id="top-room-code">------</strong></div>
+                <div class="chip">刷新状态 <strong id="polling-status-text">未连接</strong></div>
+                <button id="logout-btn" class="btn btn-ghost hidden" type="button">退出登录</button>
+            </div>
+        </header>
+
+        <section id="auth-gate" class="auth-gate hidden">
+            <div class="auth-card panel">
+                <div class="panel-inner">
+                    <div class="section-title">
+                        <h2>登录后进入会议室</h2>
+                        <span>Secure Entry</span>
+                    </div>
+                    <p class="subtle-note" id="auth-hint-text">请输入你的邮箱和密码。登录成功后，会自动进入当前会议室。</p>
+                    <div class="form-grid" style="margin-top: 16px;">
+                        <label class="field">
+                            邮箱
+                            <input id="login-email" type="email" placeholder="name@example.com" autocomplete="username">
+                        </label>
+                        <label class="field">
+                            密码
+                            <input id="login-password" type="password" placeholder="请输入密码" autocomplete="current-password">
+                        </label>
+                    </div>
+                    <div class="button-row" style="margin-top: 16px;">
+                        <button id="login-btn" class="btn btn-primary" type="button">登录并进入会议室</button>
+                        <button id="go-home-btn" class="btn btn-secondary" type="button">返回首页</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="meeting-entry-panel" class="entry-shell hidden">
+            <div class="entry-grid">
+                <section class="panel">
+                    <div class="entry-card">
+                        <div class="section-title">
+                            <h2>进入会议室系统</h2>
+                            <span>Entry</span>
+                        </div>
+                        <p class="subtle-note">首页不再展示会议室预览。创建、加入和进入会议都统一在这里完成。</p>
+                        <div class="entry-stack" style="margin-top: 18px;">
+                            <div class="room-summary">
+                                <h2>创建会议室</h2>
+                                <p>先确定主题和产品概念，再邀请成员进入等候区。</p>
+                                <div class="form-grid" style="margin-top: 16px;">
+                                    <label class="field">
+                                        会议室名称
+                                        <input id="create-room-name-input" type="text" placeholder="例如：篮球回收器验证会">
+                                    </label>
+                                    <label class="field">
+                                        会议主题
+                                        <input id="create-room-topic-input" type="text" placeholder="例如：是否进入校园试点">
+                                    </label>
+                                    <label class="field">
+                                        产品名称
+                                        <input id="create-room-product-name-input" type="text" placeholder="例如：智能篮球自动回收器">
+                                    </label>
+                                    <label class="field">
+                                        产品概念
+                                        <textarea id="create-room-product-concept-input" placeholder="简要描述你希望讨论的产品概念。"></textarea>
+                                    </label>
+                                    <label class="field">
+                                        目标人数
+                                        <input id="create-room-target-count-input" type="text" inputmode="numeric" placeholder="默认 4">
+                                    </label>
+                                </div>
+                                <div class="button-row" style="margin-top: 14px;">
+                                    <button id="create-room-btn" class="btn btn-primary" type="button">创建会议室</button>
+                                </div>
+                            </div>
+
+                            <div class="panel" style="background: transparent; box-shadow: none;">
+                                <div class="entry-card" style="padding: 0;">
+                                    <div class="section-title">
+                                        <h3>加入会议室</h3>
+                                        <span>Join</span>
+                                    </div>
+                                    <div class="form-grid">
+                                        <label class="field">
+                                            房间码
+                                            <input id="entry-room-code-input" type="text" placeholder="输入房间码后直接加入">
+                                        </label>
+                                    </div>
+                                    <div class="button-row" style="margin-top: 14px;">
+                                        <button id="entry-join-btn" class="btn btn-secondary" type="button">加入会议室</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="entry-stack">
+                    <section class="panel">
+                        <div class="entry-card">
+                            <div class="section-title">
+                                <h3>我的会议</h3>
+                                <span>Rooms</span>
+                            </div>
+                            <div class="button-row" style="margin-bottom: 14px;">
+                                <button id="refresh-entry-room-list-btn" class="btn btn-ghost" type="button">刷新列表</button>
+                            </div>
+                            <div id="meeting-room-list" class="entry-list">
+                                <div class="empty-card">
+                                    <p>登录后会在这里显示你创建或加入的会议室。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </section>
+
+        <main id="meeting-app" class="layout hidden">
+            <aside class="sidebar-stack">
+                <section class="panel">
+                    <div class="panel-inner">
+                        <div class="room-summary">
+                            <div class="section-title">
+                                <h2 id="room-name-text">等待载入会议室</h2>
+                                <span id="phase-text">waiting</span>
+                            </div>
+                            <p id="room-summary-text">先创建或加入会议室，成员到齐后再由房主开始正式讨论。</p>
+                            <div class="room-meta-grid">
+                                <div class="meta-card">
+                                    <div class="label">已到场</div>
+                                    <div class="value"><span id="arrived-count-text">0</span>/<span id="target-count-text">0</span></div>
+                                </div>
+                                <div class="meta-card">
+                                    <div class="label">报告入口</div>
+                                    <div class="value" id="report-link-state">待开始</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-title" style="margin-top: 18px;">
+                            <h3>主题与主持设置</h3>
+                            <span>Owner</span>
+                        </div>
+                        <div class="form-grid">
+                            <label class="field">
+                                会议主题
+                                <input id="topic-title-input" type="text" placeholder="例如：是否进入企业试点采购">
+                            </label>
+                            <label class="field">
+                                主题补充说明
+                                <textarea id="topic-notes-input" placeholder="房主可以在等候区修改主题说明。"></textarea>
+                            </label>
+                            <label class="field">
+                                讨论子议题
+                                <textarea id="topic-list-input" placeholder="每行一个议题，例如：预算压力、部署节奏、员工接受度"></textarea>
+                            </label>
+                        </div>
+                        <div class="button-row" style="margin-top: 14px;">
+                            <button id="save-topic-btn" class="btn btn-secondary" type="button">保存主题</button>
+                            <button id="start-meeting-btn" class="btn btn-primary" type="button">开始会议</button>
+                            <button id="skip-turn-btn" class="btn btn-secondary hidden" type="button">跳过当前发言人</button>
+                            <button id="end-meeting-btn" class="btn btn-danger hidden" type="button">结束会议</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-inner">
+                        <div class="section-title">
+                            <h3>邀请与房间信息</h3>
+                            <span>Share</span>
+                        </div>
+                        <div class="invite-box" id="invite-link-text">创建或加入会议室后，这里会显示邀请链接。</div>
+                        <div class="button-row" style="margin-top: 12px;">
+                            <button id="copy-invite-btn" class="btn btn-secondary" type="button">复制邀请链接</button>
+                            <button id="open-report-btn" class="btn btn-ghost" type="button">生成并打开报告</button>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="panel timeline-panel">
+                <div class="hero-strip">
+                    <div class="eyebrow">Meeting Timeline</div>
+                    <h2 id="hero-title-text">等候区</h2>
+                    <p id="hero-copy-text">成员可以在等候区里互相发送消息，房主也可以在这里继续修改主题，确认到场情况与发言顺序。</p>
+                    <div class="phase-tabs">
+                        <div id="phase-pill-waiting" class="phase-pill active">Waiting 等候区</div>
+                        <div id="phase-pill-live" class="phase-pill">Live 正式讨论</div>
+                        <div id="phase-pill-ended" class="phase-pill">Ended 已结束</div>
+                    </div>
+                </div>
+                <div class="timeline-body">
+                    <div class="status-banner">
+                        <strong id="timeline-status-title">正在等待会议室数据</strong>
+                        <p id="timeline-status-copy">进入会议室后，系统会每 2 秒刷新一次状态，保证成员列表、等候区消息和正式发言进度保持同步。</p>
+                    </div>
+
+                    <section id="waiting-section">
+                        <div class="section-title">
+                            <h3>等候区消息</h3>
+                            <span>Warm-Up</span>
+                        </div>
+                        <div id="meeting-chat-list" class="feed">
+                            <div class="empty-card">
+                                <p>等候区还没有消息。</p>
+                            </div>
+                        </div>
+                        <div class="entry-box" style="margin-top: 14px;">
+                            <textarea id="meeting-chat-input" placeholder="在这里给其他成员发送消息，例如：先确认今天的重点、提醒大家发言顺序、补充背景资料。"></textarea>
+                            <div class="button-row">
+                                <button id="send-waiting-message-btn" class="btn btn-primary" type="button">发送等候区消息</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="live-section" class="hidden">
+                        <div id="active-speaker-banner" class="speaker-banner">
+                            <div class="speaker-banner-top">
+                                <strong id="active-speaker-title">当前发言人：等待开始</strong>
+                                <span id="active-speaker-status" class="speaker-banner-status">WAITING</span>
+                            </div>
+                            <p id="active-speaker-copy">正式讨论开始后，只允许当前轮到的真人成员发言；如果遇到 AI 补位席，系统会自动生成该席位的发言并推进到下一位真人。</p>
+                        </div>
+                        <div class="section-title" style="margin-top: 18px;">
+                            <h3>正式讨论时间线</h3>
+                            <span>Turn-Based</span>
+                        </div>
+                        <div id="meeting-discussion-list" class="feed">
+                            <div class="empty-card">
+                                <p>正式讨论尚未开始。</p>
+                            </div>
+                        </div>
+                        <div id="discussion-entry-box" class="entry-box" style="margin-top: 14px;">
+                            <textarea id="meeting-discussion-input" placeholder="只有当前轮到的真人成员可以在这里发言。"></textarea>
+                            <div class="entry-hint" id="discussion-entry-hint">系统会在你提交后自动推进到下一席。如果下一席是 AI 补位，系统会自动发言。</div>
+                            <div class="button-row">
+                                <button id="send-discussion-message-btn" class="btn btn-primary" type="button">提交本轮发言</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="ended-section" class="hidden">
+                        <div class="empty-card">
+                            <strong style="display:block; margin-bottom: 6px; font-size: 18px;">会议已结束</strong>
+                            <p>正式讨论已经关闭。你可以继续查看完整时间线，或一键根据会议记录生成分析报告并在新页查看。</p>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <aside class="right-stack">
+                <section class="panel">
+                    <div class="panel-inner">
+                        <div class="section-title">
+                            <h3>成员状态</h3>
+                            <span>Presence</span>
+                        </div>
+                        <div id="meeting-members-list" class="member-list">
+                            <div class="empty-card">
+                                <p>等待成员进入会议室。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-inner">
+                        <div class="section-title">
+                            <h3>发言顺序</h3>
+                            <span>Queue</span>
+                        </div>
+                        <div id="meeting-turn-order-list" class="turn-list">
+                            <div class="empty-card">
+                                <p>房主可以在开始前调整发言顺序。</p>
+                            </div>
+                        </div>
+                        <div class="button-row" style="margin-top: 14px;">
+                            <button id="save-order-btn" class="btn btn-secondary" type="button">保存当前顺序</button>
+                        </div>
+                        <p class="subtle-note" style="margin-top: 12px;">
+                            开始前可调整顺序；开始后顺序锁定，只能推进、跳过或结束。
+                        </p>
+                    </div>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <button id="meeting-help-fab" class="help-fab" type="button" aria-label="打开会议室使用说明">?</button>
+    <aside id="meeting-help-drawer" class="help-drawer hidden">
+        <div class="section-title">
+            <h3>会议室使用说明</h3>
+            <button id="close-help-btn" class="btn btn-ghost" type="button">关闭</button>
+        </div>
+        <p class="subtle-note">这页已经同时承担会议入口、等候区和正式讨论区，不再需要回到首页处理会议室流程。</p>
+        <ol>
+            <li>房主可以直接在本页创建会议室，确定主题后，系统会自动生成绑定场景草稿并进入会议室。</li>
+            <li>成员通过房间码或邀请链接进入会议室。在等候区里，成员可以给其他人发送消息，房主可以继续调整主题和子议题。</li>
+            <li>房主可以在右侧保存发言顺序。开始会议前，顺序可以上下调整；一旦开始，顺序就会锁定。</li>
+            <li>正式讨论采用固定轮转。A 发言完后到 B，B 发言完后到 C；如果缺席位由 AI 补位，系统会自动代替该席位发言并继续推进。</li>
+            <li>如果某个真人席位卡住，房主可以点击“跳过当前发言人”；会议何时结束，也由房主手动控制。</li>
+            <li>报告只使用正式讨论时间线，不会把等候区消息混进结论。</li>
+        </ol>
+    </aside>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+        const API_BASE = '/api';
+        const MEETING_SYNC_CHANNEL = 'focus-group-meeting-sync';
+        const MEETING_SYNC_STORAGE_KEY = 'focus-group-meeting-sync-event';
+        const state = {
+            currentUser: null,
+            room: null,
+            scenario: null,
+            members: [],
+            messages: [],
+            discussion: null,
+            roomList: [],
+            pendingTurnOrder: [],
+            pollingTimer: null,
+            inviteJoined: false,
+            syncChannel: null,
+            roomRefreshInFlight: false,
+            queuedRoomRefresh: false,
+            renderedWaitingMessageKeys: new Set(),
+            renderedDiscussionMessageKeys: new Set(),
+            lastActiveSpeakerKey: null,
+            pendingStartMeeting: false,
+            pendingDiscussionSubmit: false,
+            pendingReportGeneration: false
+        };
+
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function getParams() {
+            return new URLSearchParams(window.location.search);
+        }
+
+        function showToast(message) {
+            const toast = $('toast');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            window.clearTimeout(showToast.timer);
+            showToast.timer = window.setTimeout(() => toast.classList.add('hidden'), 2400);
+        }
+
+        async function apiFetch(path, options = {}) {
+            const response = await fetch(path, {
+                method: options.method || 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {})
+                },
+                credentials: 'same-origin',
+                cache: 'no-store',
+                body: options.body ? JSON.stringify(options.body) : undefined
+            });
+            return response;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            if (Number.isNaN(date.getTime())) return '';
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function updatePollingStatus(text) {
+            $('polling-status-text').textContent = text;
+        }
+
+        function getPollingInterval() {
+            return currentPhase() === 'live' ? 900 : 1400;
+        }
+
+        function buildMessageKey(prefix, message, index) {
+            const stableId = message?.id
+                ?? message?.message_id
+                ?? message?.record_id
+                ?? message?.timestamp
+                ?? message?.created_at
+                ?? `${message?.participant_id || message?.sender_name || 'anon'}-${index}`;
+            return `${prefix}:${stableId}:${message?.content || ''}`;
+        }
+
+        function scrollFeedToBottom(container) {
+            window.requestAnimationFrame(() => {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        function pulseElement(element, className = 'attention-pulse') {
+            if (!element) {
+                return;
+            }
+            element.classList.remove(className);
+            void element.offsetWidth;
+            element.classList.add(className);
+            window.clearTimeout(element._pulseTimer);
+            element._pulseTimer = window.setTimeout(() => {
+                element.classList.remove(className);
+            }, 1500);
+        }
+
+        function pulseActiveSpeakerChange() {
+            pulseElement($('active-speaker-banner'));
+            const activeCards = document.querySelectorAll('.member-card.active, .turn-card.active');
+            activeCards.forEach((card) => pulseElement(card));
+        }
+
+        function setButtonBusy(buttonId, busy, busyLabel, idleLabel) {
+            const button = $(buttonId);
+            if (!button) {
+                return;
+            }
+            if (!button.dataset.idleLabel) {
+                button.dataset.idleLabel = idleLabel || button.textContent;
+            }
+            if (busy) {
+                button.textContent = busyLabel;
+                button.disabled = true;
+                return;
+            }
+            button.textContent = button.dataset.idleLabel || idleLabel || button.textContent;
+        }
+
+        function getNextSeatAfterCurrent() {
+            const seats = state.discussion?.seats || [];
+            if (!seats.length) {
+                return null;
+            }
+            const currentIndex = Number(state.discussion?.current_turn_index || 0);
+            return seats[(currentIndex + 1) % seats.length] || null;
+        }
+
+        function markPendingAiTransition() {
+            const nextSeat = getNextSeatAfterCurrent();
+            if (!nextSeat || nextSeat.speaker_origin !== 'ai' || !state.discussion) {
+                return null;
+            }
+            const snapshot = JSON.parse(JSON.stringify(state.discussion));
+            state.discussion = {
+                ...state.discussion,
+                ai_turn_pending: true,
+                current_turn_index: (Number(state.discussion.current_turn_index || 0) + 1) % Math.max((state.discussion.seats || []).length, 1),
+                turn_number: Number(state.discussion.turn_number || 1) + 1,
+                active_speaker_participant_id: nextSeat.id,
+                active_speaker: nextSeat,
+                current_user: {
+                    ...(state.discussion.current_user || {}),
+                    can_speak_now: false,
+                    active_participant_id: nextSeat.id
+                }
+            };
+            renderMembers();
+            renderTurnOrder();
+            renderGeneralState();
+            return snapshot;
+        }
+
+        function scheduleNextPoll(delay = getPollingInterval()) {
+            stopPolling();
+            if (!state.room?.id) {
+                return;
+            }
+            state.pollingTimer = window.setTimeout(() => {
+                refreshMeetingRoom({ preserveDrafts: true, silent: true }).catch(() => {});
+            }, delay);
+        }
+
+        async function refreshMeetingRoom(options = {}) {
+            const roomId = state.room?.id;
+            if (!roomId) {
+                return;
+            }
+            if (state.roomRefreshInFlight) {
+                state.queuedRoomRefresh = true;
+                return;
+            }
+            state.roomRefreshInFlight = true;
+            try {
+                await loadMeetingRoom(roomId, { preserveDrafts: options.preserveDrafts !== false });
+            } catch (error) {
+                if (!options.silent) {
+                    throw error;
+                }
+                updatePollingStatus('同步失败');
+            } finally {
+                state.roomRefreshInFlight = false;
+                const shouldReplay = state.queuedRoomRefresh;
+                state.queuedRoomRefresh = false;
+                scheduleNextPoll(shouldReplay ? 120 : getPollingInterval());
+            }
+        }
+
+        async function requestImmediateRoomRefresh(reason = 'room_action') {
+            if (!state.room?.id) {
+                return;
+            }
+            updatePollingStatus(reason === 'remote_signal' ? '收到房间更新' : '正在同步');
+            await refreshMeetingRoom({ preserveDrafts: true });
+        }
+
+        function handleRoomSyncSignal(payload) {
+            const targetRoomId = Number(payload?.roomId || 0);
+            if (!targetRoomId || targetRoomId !== Number(state.room?.id || 0)) {
+                return;
+            }
+            requestImmediateRoomRefresh('remote_signal').catch(() => {});
+        }
+
+        function notifyRoomActivity(reason = 'room_action') {
+            if (!state.room?.id) {
+                return;
+            }
+            const payload = {
+                roomId: state.room.id,
+                reason,
+                emittedAt: Date.now()
+            };
+            if (state.syncChannel) {
+                state.syncChannel.postMessage(payload);
+            }
+            try {
+                window.localStorage.setItem(MEETING_SYNC_STORAGE_KEY, JSON.stringify(payload));
+            } catch (error) {
+                // Ignore storage write failures and fall back to polling.
+            }
+            requestImmediateRoomRefresh(reason).catch(() => {});
+        }
+
+        function setupRoomSyncChannel() {
+            if ('BroadcastChannel' in window) {
+                state.syncChannel = new BroadcastChannel(MEETING_SYNC_CHANNEL);
+                state.syncChannel.addEventListener('message', (event) => {
+                    handleRoomSyncSignal(event.data);
+                });
+            }
+            window.addEventListener('storage', (event) => {
+                if (event.key !== MEETING_SYNC_STORAGE_KEY || !event.newValue) {
+                    return;
+                }
+                try {
+                    handleRoomSyncSignal(JSON.parse(event.newValue));
+                } catch (error) {
+                    // Ignore malformed sync payloads.
+                }
+            });
+        }
+
+        function getRoomStatusLabel(status) {
+            if (status === 'active') return '进行中';
+            if (status === 'ended') return '已结束';
+            return '等待中';
+        }
+
+        function renderMeetingRoomList() {
+            const container = $('meeting-room-list');
+            if (!state.currentUser) {
+                container.innerHTML = '<div class="empty-card"><p>请先登录后查看你创建或加入的会议室。</p></div>';
+                return;
+            }
+            if (!state.roomList.length) {
+                container.innerHTML = '<div class="empty-card"><p>还没有会议室，先创建一个新的会议室。</p></div>';
+                return;
+            }
+            container.innerHTML = state.roomList.map((item) => {
+                const room = item.room || {};
+                const members = item.members || [];
+                const roleLabel = room.owner_user_id === state.currentUser?.id ? '我创建的' : '我加入的';
+                return `
+                    <article class="entry-room-item">
+                        <div class="entry-room-item-header">
+                            <div>
+                                <strong>${escapeHtml(room.room_name || '未命名会议')}</strong>
+                                <p>${roleLabel} · ${getRoomStatusLabel(room.status)}</p>
+                            </div>
+                            <span class="meta-tag">${members.length}/${room.target_count || 0} 人</span>
+                        </div>
+                        <div class="button-row" style="margin-top: 12px;">
+                            <button class="btn btn-primary open-room-btn" type="button" data-room-id="${room.id}">进入会议室</button>
+                            <button class="btn btn-ghost copy-room-btn" type="button" data-invite-link="${escapeHtml(room.invite_link || '')}">复制邀请链接</button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.open-room-btn').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const roomId = Number(button.dataset.roomId);
+                    if (!Number.isInteger(roomId) || roomId <= 0) return;
+                    history.replaceState({}, '', `/meeting-room?room_id=${roomId}`);
+                    await loadMeetingRoom(roomId);
+                    startPolling();
+                });
+            });
+
+            container.querySelectorAll('.copy-room-btn').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const inviteLink = button.dataset.inviteLink || '';
+                    if (!inviteLink) {
+                        showToast('当前会议还没有可用邀请链接');
+                        return;
+                    }
+                    try {
+                        if (navigator.clipboard?.writeText) {
+                            await navigator.clipboard.writeText(inviteLink);
+                        } else {
+                            const input = document.createElement('textarea');
+                            input.value = inviteLink;
+                            document.body.appendChild(input);
+                            input.select();
+                            document.execCommand('copy');
+                            input.remove();
+                        }
+                        showToast('邀请链接已复制');
+                    } catch (error) {
+                        showToast('复制失败，请手动复制');
+                    }
+                });
+            });
+        }
+
+        async function loadMeetingRoomList() {
+            if (!state.currentUser) {
+                state.roomList = [];
+                renderMeetingRoomList();
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/meeting-rooms`);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '会议列表加载失败');
+            }
+            state.roomList = Array.isArray(data.rooms) ? data.rooms : [];
+            renderMeetingRoomList();
+        }
+
+        function derivePendingTurnOrder() {
+            const explicit = Array.isArray(state.room?.turn_order) ? state.room.turn_order : [];
+            const validIds = state.members.map((member) => member.id);
+            const seen = new Set();
+            const ordered = [];
+            explicit.forEach((id) => {
+                if (validIds.includes(id) && !seen.has(id)) {
+                    ordered.push(id);
+                    seen.add(id);
+                }
+            });
+            validIds.forEach((id) => {
+                if (!seen.has(id)) {
+                    ordered.push(id);
+                    seen.add(id);
+                }
+            });
+            state.pendingTurnOrder = ordered;
+        }
+
+        function setPhaseUi(phase) {
+            const normalized = phase || 'waiting';
+            $('phase-pill-waiting').classList.toggle('active', normalized === 'waiting');
+            $('phase-pill-live').classList.toggle('active', normalized === 'live');
+            $('phase-pill-ended').classList.toggle('active', normalized === 'ended');
+            $('waiting-section').classList.toggle('hidden', normalized !== 'waiting');
+            $('live-section').classList.toggle('hidden', normalized !== 'live');
+            $('ended-section').classList.toggle('hidden', normalized !== 'ended');
+            $('skip-turn-btn').classList.toggle('hidden', normalized !== 'live' || !isOwner());
+            $('end-meeting-btn').classList.toggle('hidden', normalized === 'waiting' || !isOwner());
+        }
+
+        function isOwner() {
+            return Boolean(state.currentUser && state.room && state.room.owner_user_id === state.currentUser.id);
+        }
+
+        function currentPhase() {
+            return state.discussion?.phase || state.room?.discussion_phase || (state.room?.status === 'ended' ? 'ended' : 'waiting');
+        }
+
+        function renderWaitingMessages() {
+            const container = $('meeting-chat-list');
+            const messages = state.messages || [];
+            if (!messages.length) {
+                state.renderedWaitingMessageKeys = new Set();
+                container.innerHTML = '<div class="empty-card"><p>等候区还没有消息。</p></div>';
+                return;
+            }
+            const previousKeys = state.renderedWaitingMessageKeys || new Set();
+            const nextKeys = new Set();
+            let hasNewMessage = false;
+            container.innerHTML = messages.map((message, index) => {
+                const isSystem = message.message_type === 'system';
+                const messageKey = buildMessageKey('waiting', message, index);
+                const isNew = !previousKeys.has(messageKey);
+                nextKeys.add(messageKey);
+                hasNewMessage = hasNewMessage || isNew;
+                return `
+                    <article class="feed-item${isNew ? ' feed-item-enter' : ''}">
+                        <div class="feed-avatar ${isSystem ? 'system' : ''}">${isSystem ? '!' : escapeHtml((message.sender_name || '成员').slice(0, 1))}</div>
+                        <div class="feed-bubble ${isSystem ? 'system' : ''}">
+                            <header>
+                                <strong>${escapeHtml(message.sender_name || (isSystem ? '系统通知' : '成员'))}</strong>
+                                <span>${formatTime(message.created_at)}</span>
+                            </header>
+                            <p>${escapeHtml(message.content || '')}</p>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+            state.renderedWaitingMessageKeys = nextKeys;
+            if (hasNewMessage) {
+                scrollFeedToBottom(container);
+            }
+        }
+
+        function renderDiscussionMessages() {
+            const container = $('meeting-discussion-list');
+            const messages = state.discussion?.messages || [];
+            if (!messages.length) {
+                state.renderedDiscussionMessageKeys = new Set();
+                container.innerHTML = '<div class="empty-card"><p>正式讨论尚未开始。</p></div>';
+                return;
+            }
+            const previousKeys = state.renderedDiscussionMessageKeys || new Set();
+            const nextKeys = new Set();
+            let hasNewMessage = false;
+            container.innerHTML = messages.map((message, index) => {
+                const isAi = message.speaker_origin === 'ai';
+                const isSystem = message.speaker_origin === 'system' || message.participant_id === 0;
+                const messageKey = buildMessageKey('discussion', message, index);
+                const isNew = !previousKeys.has(messageKey);
+                nextKeys.add(messageKey);
+                hasNewMessage = hasNewMessage || isNew;
+                return `
+                    <article class="feed-item${isNew ? ' feed-item-enter' : ''}">
+                        <div class="feed-avatar ${isSystem ? 'system' : ''}">${isSystem ? '议' : escapeHtml((message.participant_name || '成员').slice(0, 1))}</div>
+                        <div class="feed-bubble ${isSystem ? 'system' : ''}">
+                            <header>
+                                <strong>${escapeHtml(message.participant_name || (isAi ? 'AI 席位' : '成员'))}</strong>
+                                <span>${formatTime(message.timestamp)}</span>
+                            </header>
+                            <p>${escapeHtml(message.content || '')}</p>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+            state.renderedDiscussionMessageKeys = nextKeys;
+            if (hasNewMessage) {
+                scrollFeedToBottom(container);
+            }
+        }
+
+        function renderMembers() {
+            const container = $('meeting-members-list');
+            const activeUserId = state.discussion?.active_speaker?.linked_user_id;
+            if (!state.members.length) {
+                container.innerHTML = '<div class="empty-card"><p>等待成员进入会议室。</p></div>';
+                return;
+            }
+            container.innerHTML = state.members.map((member) => `
+                <article class="member-card ${activeUserId === member.user_id ? 'active' : ''}">
+                    <div class="member-top">
+                        <strong>${escapeHtml(member.display_name || `成员 ${member.user_id}`)}</strong>
+                        <span class="meta-tag">${member.member_role === 'owner' ? '房主' : '成员'}</span>
+                    </div>
+                    <p>${member.status === 'arrived' ? '已到场，可参与等候区沟通。' : '暂未到场。'}</p>
+                </article>
+            `).join('');
+        }
+
+        function moveMemberOrder(memberId, delta) {
+            const index = state.pendingTurnOrder.indexOf(memberId);
+            const nextIndex = index + delta;
+            if (index < 0 || nextIndex < 0 || nextIndex >= state.pendingTurnOrder.length) {
+                return;
+            }
+            const clone = [...state.pendingTurnOrder];
+            [clone[index], clone[nextIndex]] = [clone[nextIndex], clone[index]];
+            state.pendingTurnOrder = clone;
+            renderTurnOrder();
+        }
+
+        function renderTurnOrder() {
+            const container = $('meeting-turn-order-list');
+            const phase = currentPhase();
+            if (phase === 'live' || phase === 'ended') {
+                const seats = state.discussion?.seats || [];
+                if (!seats.length) {
+                    container.innerHTML = '<div class="empty-card"><p>正式席位将在开始会议后生成。</p></div>';
+                    return;
+                }
+                const activeId = state.discussion?.active_speaker_participant_id;
+                container.innerHTML = seats.map((seat, index) => `
+                    <article class="turn-card ${activeId === seat.id ? 'active' : ''}">
+                        <div class="turn-top">
+                            <strong>${index + 1}. ${escapeHtml(seat.persona_name || '席位')}</strong>
+                            <span class="meta-tag">${seat.speaker_origin === 'ai' ? 'AI 补位' : '真人席位'}</span>
+                        </div>
+                        <p>${activeId === seat.id ? '当前正在发言。' : '等待轮到该席位。'}</p>
+                    </article>
+                `).join('');
+                return;
+            }
+
+            if (!state.pendingTurnOrder.length) {
+                container.innerHTML = '<div class="empty-card"><p>房主可以在开始前调整发言顺序。</p></div>';
+                return;
+            }
+
+            const canEdit = isOwner() && phase === 'waiting';
+            container.innerHTML = state.pendingTurnOrder.map((memberId, index) => {
+                const member = state.members.find((item) => item.id === memberId);
+                if (!member) return '';
+                return `
+                    <article class="turn-card">
+                        <div class="turn-top">
+                            <strong>${index + 1}. ${escapeHtml(member.display_name || `成员 ${member.user_id}`)}</strong>
+                            <span class="meta-tag">${member.member_role === 'owner' ? '房主' : '成员'}</span>
+                        </div>
+                        <p>${index === 0 ? '会议开始后将由这位成员先发言。' : '等待前序席位完成发言后轮到该成员。'}</p>
+                        ${canEdit ? `
+                            <div class="turn-actions">
+                                <button class="turn-mini-btn" type="button" data-move="${member.id}" data-direction="-1" ${index === 0 ? 'disabled' : ''}>上移</button>
+                                <button class="turn-mini-btn" type="button" data-move="${member.id}" data-direction="1" ${index === state.pendingTurnOrder.length - 1 ? 'disabled' : ''}>下移</button>
+                            </div>
+                        ` : ''}
+                    </article>
+                `;
+            }).join('');
+
+            container.querySelectorAll('[data-move]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    moveMemberOrder(Number(button.getAttribute('data-move')), Number(button.getAttribute('data-direction')));
+                });
+            });
+        }
+
+        function renderActiveSpeaker() {
+            const phase = currentPhase();
+            const activeSpeaker = state.discussion?.active_speaker;
+            const canSpeakNow = Boolean(state.discussion?.current_user?.can_speak_now);
+            const discussionInput = $('meeting-discussion-input');
+            const discussionButton = $('send-discussion-message-btn');
+            const banner = $('active-speaker-banner');
+            const status = $('active-speaker-status');
+            banner.classList.remove('is-self', 'is-ai', 'is-other');
+
+            if (state.pendingStartMeeting) {
+                $('active-speaker-title').textContent = '当前发言人：正在启动会议';
+                $('active-speaker-copy').textContent = '系统正在创建正式席位并加载讨论区，请稍候。';
+                status.textContent = 'STARTING';
+                discussionInput.disabled = true;
+                discussionButton.disabled = true;
+                state.lastActiveSpeakerKey = 'waiting:starting';
+                return;
+            }
+
+            if (phase !== 'live') {
+                $('active-speaker-title').textContent = phase === 'ended' ? '当前发言人：会议已结束' : '当前发言人：等待开始';
+                $('active-speaker-copy').textContent = phase === 'ended'
+                    ? '正式讨论已经停止，时间线保持只读状态。'
+                    : '房主开始会议后，系统会按照保存好的顺序逐个推进发言。';
+                status.textContent = phase === 'ended' ? 'ENDED' : 'WAITING';
+                discussionInput.disabled = true;
+                discussionButton.disabled = true;
+                state.lastActiveSpeakerKey = `${phase}:idle`;
+                return;
+            }
+
+            if (!activeSpeaker) {
+                $('active-speaker-title').textContent = '当前发言人：等待系统推进';
+                $('active-speaker-copy').textContent = '如果当前席位是 AI，系统会自动生成发言后继续推进。';
+                status.textContent = 'SYNCING';
+                discussionInput.disabled = true;
+                discussionButton.disabled = true;
+                if (state.lastActiveSpeakerKey !== 'live:pending') {
+                    pulseActiveSpeakerChange();
+                    state.lastActiveSpeakerKey = 'live:pending';
+                }
+                return;
+            }
+
+            const isAi = activeSpeaker.speaker_origin === 'ai';
+            const speakerMode = isAi ? 'ai' : canSpeakNow ? 'self' : 'other';
+            $('active-speaker-title').textContent = `当前发言人：${activeSpeaker.persona_name}`;
+            $('active-speaker-copy').textContent = (isAi && state.discussion?.ai_turn_pending)
+                ? 'AI 正在生成这一轮发言，页面会自动刷新到下一位真人成员。'
+                : isAi
+                ? '这是 AI 补位席，系统会自动代替该席位发言并继续轮转。'
+                : canSpeakNow
+                    ? '现在轮到你发言。提交后系统会自动推进到下一席。'
+                    : '当前轮到其他真人成员发言，你可以先阅读时间线或等待下一轮。';
+            status.textContent = (isAi && state.discussion?.ai_turn_pending) ? 'AI THINKING' : isAi ? 'AI TURN' : canSpeakNow ? 'YOUR TURN' : 'LIVE';
+            banner.classList.add(`is-${speakerMode}`);
+
+            discussionInput.disabled = isAi || !canSpeakNow || state.pendingDiscussionSubmit;
+            discussionButton.disabled = isAi || !canSpeakNow || state.pendingDiscussionSubmit;
+            discussionInput.placeholder = canSpeakNow ? '输入你的本轮观点。' : '只有当前轮到的真人成员可以发言。';
+
+            const activeSpeakerKey = `live:${activeSpeaker.id || activeSpeaker.persona_name}:${speakerMode}`;
+            if (state.lastActiveSpeakerKey && state.lastActiveSpeakerKey !== activeSpeakerKey) {
+                pulseActiveSpeakerChange();
+            }
+            state.lastActiveSpeakerKey = activeSpeakerKey;
+        }
+
+        function renderGeneralState() {
+            const phase = currentPhase();
+            const reportReady = phase === 'ended' || phase === 'live';
+            $('top-status-text').textContent = phase === 'waiting' ? '等候区' : phase === 'live' ? '正式讨论中' : '会议已结束';
+            $('top-room-code').textContent = state.room?.room_code || '------';
+            $('room-name-text').textContent = state.room?.room_name || '等待载入会议室';
+            $('phase-text').textContent = phase;
+            $('arrived-count-text').textContent = String(state.room?.arrived_count || 0);
+            $('target-count-text').textContent = String(state.room?.target_count || 0);
+            $('invite-link-text').textContent = state.room?.invite_link || '创建或加入会议室后，这里会显示邀请链接。';
+            $('report-link-state').textContent = reportReady && state.scenario?.id ? '可查看' : '待开始';
+            $('save-topic-btn').disabled = !isOwner() || phase !== 'waiting';
+            $('start-meeting-btn').disabled = !isOwner() || phase !== 'waiting' || state.pendingStartMeeting;
+            $('save-order-btn').disabled = !isOwner() || phase !== 'waiting';
+            $('topic-title-input').disabled = !isOwner() || phase !== 'waiting';
+            $('topic-notes-input').disabled = !isOwner() || phase !== 'waiting';
+            $('topic-list-input').disabled = !isOwner() || phase !== 'waiting';
+            $('open-report-btn').disabled = !state.scenario?.id || state.pendingReportGeneration;
+
+            $('room-summary-text').textContent = phase === 'waiting'
+                ? '房主可以继续调整主题与顺序，成员可以在等候区里先互相沟通。'
+                : phase === 'live'
+                    ? '正式讨论已开始。系统会严格按照保存好的顺序轮流推进发言。'
+                    : '会议已经结束，正式讨论时间线只读，报告入口已开放。';
+            $('hero-title-text').textContent = phase === 'waiting' ? '等候区' : phase === 'live' ? '正式讨论区' : '会议已结束';
+            $('hero-copy-text').textContent = phase === 'waiting'
+                ? '成员可以在等候区里互相发送消息，房主也可以在这里继续修改主题和确认顺序。'
+                : phase === 'live'
+                    ? '发言将按固定顺序推进。真人成员手动输入，AI 补位席自动发言。'
+                    : '正式讨论已经关闭，你仍可回看全部时间线并进入报告页。';
+            $('timeline-status-title').textContent = phase === 'waiting'
+                ? '正在等候成员与主题确认'
+                : phase === 'live'
+                    ? '系统按固定顺序推进发言'
+                    : '会议已手动结束';
+            $('timeline-status-copy').textContent = phase === 'waiting'
+                ? '先让成员进入房间、在等候区沟通，并由房主确定发言顺序。'
+                : phase === 'live'
+                    ? '如果当前席位是 AI 补位，系统会自动发言并推进到下一位真人成员。'
+                    : '你现在可以打开报告页，基于正式讨论记录继续后续分析。';
+            $('open-report-btn').disabled = !state.scenario?.id;
+            setPhaseUi(phase);
+            renderActiveSpeaker();
+        }
+
+        function applyPayload(payload, options = {}) {
+            const preserveDrafts = Boolean(options.preserveDrafts);
+            const hasRoom = Object.prototype.hasOwnProperty.call(payload || {}, 'room');
+            const hasScenario = Object.prototype.hasOwnProperty.call(payload || {}, 'scenario');
+            const hasMembers = Object.prototype.hasOwnProperty.call(payload || {}, 'members');
+            const hasMessages = Object.prototype.hasOwnProperty.call(payload || {}, 'messages');
+            const hasDiscussion = Object.prototype.hasOwnProperty.call(payload || {}, 'discussion');
+
+            state.room = hasRoom ? (payload?.room || null) : state.room;
+            state.scenario = hasScenario ? (payload?.scenario || null) : state.scenario;
+            state.members = hasMembers ? (payload?.members || []) : state.members;
+            state.messages = hasMessages ? (payload?.messages || []) : state.messages;
+            state.discussion = hasDiscussion ? (payload?.discussion || null) : state.discussion;
+
+            if (!preserveDrafts) {
+                $('topic-title-input').value = state.room?.topic_title || '';
+                $('topic-notes-input').value = state.room?.topic_notes || '';
+                $('topic-list-input').value = Array.isArray(state.scenario?.discussion_topics) ? state.scenario.discussion_topics.join('\n') : '';
+            }
+
+            renderEntryState();
+            derivePendingTurnOrder();
+            renderWaitingMessages();
+            renderDiscussionMessages();
+            renderMembers();
+            renderTurnOrder();
+            renderGeneralState();
+        }
+
+        async function loadCurrentUser() {
+            const response = await apiFetch(`${API_BASE}/user`);
+            if (response.status === 401) {
+                state.currentUser = null;
+                return null;
+            }
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '用户状态加载失败');
+            }
+            state.currentUser = data.user || data;
+            return state.currentUser;
+        }
+
+        async function login() {
+            const email = $('login-email').value.trim();
+            const password = $('login-password').value.trim();
+            if (!email || !password) {
+                showToast('请输入邮箱和密码');
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/login`, {
+                method: 'POST',
+                body: { email, password }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '登录失败');
+            }
+            state.currentUser = data.user || null;
+            $('logout-btn').classList.remove('hidden');
+            await initializeFromQuery();
+            showToast('已登录并进入会议室');
+        }
+
+        async function logout() {
+            await apiFetch(`${API_BASE}/logout`, { method: 'POST' });
+            stopPolling();
+            state.currentUser = null;
+            state.room = null;
+            state.scenario = null;
+            state.members = [];
+            state.messages = [];
+            state.discussion = null;
+            state.roomList = [];
+            renderEntryState();
+            renderMeetingRoomList();
+            showToast('已退出登录');
+        }
+
+        function renderEntryState() {
+            const hasUser = Boolean(state.currentUser);
+            const hasRoom = Boolean(state.room?.id);
+            $('auth-gate').classList.toggle('hidden', hasUser);
+            $('meeting-entry-panel').classList.toggle('hidden', !hasUser || hasRoom);
+            $('meeting-app').classList.toggle('hidden', !hasUser || !hasRoom);
+            $('logout-btn').classList.toggle('hidden', !hasUser);
+            if (!hasUser) {
+                updatePollingStatus('未登录');
+                const params = getParams();
+                $('auth-hint-text').textContent = params.get('room_invite')
+                    ? '你打开了一个邀请链接。登录后，系统会自动加入对应会议室。'
+                    : '请输入你的邮箱和密码。登录成功后，会自动进入当前会议室。';
+            } else if (!hasRoom) {
+                $('top-status-text').textContent = '等待选择会议室';
+                $('top-room-code').textContent = '------';
+                updatePollingStatus('请选择或创建会议室');
+            }
+        }
+
+        async function joinByInviteIfNeeded() {
+            const inviteToken = getParams().get('room_invite');
+            if (!inviteToken || state.inviteJoined) {
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/join`, {
+                method: 'POST',
+                body: { invite_token: inviteToken }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '加入会议室失败');
+            }
+            state.inviteJoined = true;
+            history.replaceState({}, '', `/meeting-room?room_id=${data.room.id}`);
+            applyPayload(data);
+            notifyRoomActivity('member_joined');
+            startPolling();
+        }
+
+        async function loadMeetingRoom(roomId, options = {}) {
+            if (!roomId) {
+                applyPayload({
+                    room: null,
+                    scenario: null,
+                    members: [],
+                    messages: [],
+                    discussion: { phase: 'waiting', messages: [], seats: [], current_user: {} }
+                });
+                updatePollingStatus('未选择会议室');
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/${roomId}`);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '会议室加载失败');
+            }
+            applyPayload(data, options);
+            updatePollingStatus(`已同步 ${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`);
+        }
+
+        async function initializeFromQuery() {
+            renderEntryState();
+            if (!state.currentUser) {
+                return;
+            }
+            const params = getParams();
+            if (params.get('room_invite')) {
+                await joinByInviteIfNeeded();
+                return;
+            }
+            const roomId = Number(params.get('room_id'));
+            if (Number.isInteger(roomId) && roomId > 0) {
+                await loadMeetingRoom(roomId);
+                startPolling();
+                return;
+            }
+            applyPayload({
+                room: null,
+                scenario: null,
+                members: [],
+                messages: [],
+                discussion: { phase: 'waiting', messages: [], seats: [], current_user: {} }
+            });
+            updatePollingStatus('未选择会议室');
+            await loadMeetingRoomList();
+        }
+
+        async function createMeetingRoomFromEntry() {
+            if (!state.currentUser) {
+                showToast('请先登录');
+                return;
+            }
+            const roomName = $('create-room-name-input').value.trim();
+            const topicTitle = $('create-room-topic-input').value.trim();
+            const productName = $('create-room-product-name-input').value.trim();
+            const productConcept = $('create-room-product-concept-input').value.trim();
+            const targetCountRaw = $('create-room-target-count-input').value.trim();
+            const targetCount = Number.parseInt(targetCountRaw || '4', 10);
+
+            if (!roomName || !topicTitle || !productName || !productConcept) {
+                showToast('请先填写会议室名称、主题和产品信息');
+                return;
+            }
+
+            const response = await apiFetch(`${API_BASE}/meeting-rooms`, {
+                method: 'POST',
+                body: {
+                    room_name: roomName,
+                    topic_title: topicTitle,
+                    product_name: productName,
+                    product_concept: productConcept,
+                    target_count: Number.isInteger(targetCount) && targetCount > 0 ? targetCount : 4
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '会议室创建失败');
+            }
+
+            history.replaceState({}, '', `/meeting-room?room_id=${data.room.id}`);
+            applyPayload(data);
+            await loadMeetingRoomList();
+            notifyRoomActivity('room_created');
+            startPolling();
+            showToast('会议室已创建');
+        }
+
+        async function joinMeetingRoomFromEntry() {
+            if (!state.currentUser) {
+                showToast('请先登录');
+                return;
+            }
+            const roomCode = $('entry-room-code-input').value.trim().toUpperCase();
+            if (!roomCode) {
+                showToast('请输入房间码');
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/join`, {
+                method: 'POST',
+                body: { room_code: roomCode }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '加入会议室失败');
+            }
+
+            history.replaceState({}, '', `/meeting-room?room_id=${data.room.id}`);
+            applyPayload(data);
+            await loadMeetingRoomList();
+            notifyRoomActivity('member_joined');
+            startPolling();
+            showToast('已加入会议室');
+        }
+
+        function stopPolling() {
+            if (state.pollingTimer) {
+                clearTimeout(state.pollingTimer);
+                state.pollingTimer = null;
+            }
+        }
+
+        function startPolling() {
+            stopPolling();
+            if (!state.room?.id) {
+                return;
+            }
+            if (document.hidden) {
+                scheduleNextPoll();
+                return;
+            }
+            refreshMeetingRoom({ preserveDrafts: true, silent: true }).catch(() => {});
+        }
+
+        async function sendWaitingMessage() {
+            if (!state.room?.id) {
+                showToast('请先进入会议室');
+                return;
+            }
+            const content = $('meeting-chat-input').value.trim();
+            if (!content) {
+                showToast('请输入消息内容');
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}/messages`, {
+                method: 'POST',
+                body: { content }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '发送消息失败');
+            }
+            $('meeting-chat-input').value = '';
+            applyPayload(data, { preserveDrafts: true });
+            notifyRoomActivity('waiting_message');
+        }
+
+        async function saveTopic() {
+            if (!state.room?.id) {
+                showToast('请先进入会议室');
+                return;
+            }
+            const topicTitle = $('topic-title-input').value.trim();
+            if (!topicTitle) {
+                showToast('请先填写会议主题');
+                return;
+            }
+            const topicNotes = $('topic-notes-input').value.trim();
+            const discussionTopics = $('topic-list-input').value.split('\n').map((item) => item.trim()).filter(Boolean);
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}`, {
+                method: 'PATCH',
+                body: {
+                    topic_title: topicTitle,
+                    topic_notes: topicNotes,
+                    discussion_topics: discussionTopics
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '保存主题失败');
+            }
+            applyPayload(data);
+            notifyRoomActivity('topic_updated');
+            showToast('会议主题已更新');
+        }
+
+        async function saveTurnOrder() {
+            if (!state.room?.id || !state.pendingTurnOrder.length) {
+                showToast('当前没有可保存的顺序');
+                return;
+            }
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}/turn-order`, {
+                method: 'PATCH',
+                body: { member_ids: state.pendingTurnOrder }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '保存顺序失败');
+            }
+            applyPayload(data, { preserveDrafts: true });
+            notifyRoomActivity('turn_order_saved');
+            showToast('发言顺序已保存');
+        }
+
+        async function startMeeting() {
+            if (!state.room?.id) {
+                showToast('请先进入会议室');
+                return;
+            }
+            state.pendingStartMeeting = true;
+            setButtonBusy('start-meeting-btn', true, '正在启动会议...', '开始会议');
+            updatePollingStatus('正在启动会议');
+            renderGeneralState();
+            try {
+                const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}/start`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || '开始会议失败');
+                }
+                applyPayload(data, { preserveDrafts: true });
+                notifyRoomActivity('meeting_started');
+                startPolling();
+                showToast('会议已开始');
+            } finally {
+                state.pendingStartMeeting = false;
+                setButtonBusy('start-meeting-btn', false, '正在启动会议...', '开始会议');
+                renderGeneralState();
+            }
+        }
+
+        async function sendDiscussionMessage() {
+            if (!state.room?.id) {
+                showToast('请先进入会议室');
+                return;
+            }
+            const content = $('meeting-discussion-input').value.trim();
+            if (!content) {
+                showToast('请输入本轮发言');
+                return;
+            }
+            const previousDiscussion = JSON.parse(JSON.stringify(state.discussion || {}));
+            state.pendingDiscussionSubmit = true;
+            setButtonBusy('send-discussion-message-btn', true, '正在提交发言...', '提交本轮发言');
+            updatePollingStatus('正在提交发言');
+            markPendingAiTransition();
+            try {
+                const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}/discussion/messages`, {
+                    method: 'POST',
+                    body: { content }
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    state.discussion = previousDiscussion;
+                    throw new Error(data.error || '提交发言失败');
+                }
+                $('meeting-discussion-input').value = '';
+                applyPayload(data, { preserveDrafts: true });
+                notifyRoomActivity('discussion_message');
+            } catch (error) {
+                state.discussion = previousDiscussion;
+                renderDiscussionMessages();
+                renderMembers();
+                renderTurnOrder();
+                renderGeneralState();
+                throw error;
+            } finally {
+                state.pendingDiscussionSubmit = false;
+                setButtonBusy('send-discussion-message-btn', false, '正在提交发言...', '提交本轮发言');
+                renderGeneralState();
+            }
+        }
+
+        async function skipTurn() {
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}/discussion/skip`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '跳过发言失败');
+            }
+            applyPayload(data, { preserveDrafts: true });
+            notifyRoomActivity('turn_skipped');
+            showToast('已跳过当前发言人');
+        }
+
+        async function endMeeting() {
+            const response = await apiFetch(`${API_BASE}/meeting-rooms/${state.room.id}/discussion/end`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '结束会议失败');
+            }
+            applyPayload(data, { preserveDrafts: true });
+            notifyRoomActivity('meeting_ended');
+            showToast('会议已结束');
+        }
+
+        async function copyInviteLink() {
+            const inviteLink = state.room?.invite_link;
+            if (!inviteLink) {
+                showToast('当前没有邀请链接');
+                return;
+            }
+            try {
+                if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(inviteLink);
+                } else {
+                    const input = document.createElement('textarea');
+                    input.value = inviteLink;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    input.remove();
+                }
+                showToast('邀请链接已复制');
+            } catch (error) {
+                showToast('复制失败，请手动复制');
+            }
+        }
+
+        async function generateMeetingReportAndOpen() {
+            if (!state.scenario?.id) {
+                showToast('当前还没有绑定场景');
+                return;
+            }
+            state.pendingReportGeneration = true;
+            setButtonBusy('open-report-btn', true, '正在打开报告页...', '生成并打开报告');
+            updatePollingStatus('正在打开报告页');
+            renderGeneralState();
+            try {
+                const reportWindow = window.open(`/report?scenario_id=${state.scenario.id}&from=meeting&room_id=${state.room.id}&regenerate=1`, '_blank');
+                if (!reportWindow) {
+                    throw new Error('报告页被浏览器拦截，请允许弹出窗口后重试');
+                }
+                showToast('报告页已打开，正在生成报告');
+            } finally {
+                state.pendingReportGeneration = false;
+                setButtonBusy('open-report-btn', false, '正在打开报告页...', '生成并打开报告');
+                renderGeneralState();
+            }
+        }
+
+        function toggleHelp(force) {
+            const drawer = $('meeting-help-drawer');
+            const shouldOpen = typeof force === 'boolean' ? force : drawer.classList.contains('hidden');
+            drawer.classList.toggle('hidden', !shouldOpen);
+        }
+
+        async function boot() {
+            setupRoomSyncChannel();
+            try {
+                await loadCurrentUser();
+            } catch (error) {
+                showToast(error.message || '用户状态加载失败');
+            }
+            renderEntryState();
+            try {
+                await initializeFromQuery();
+            } catch (error) {
+                showToast(error.message || '会议室初始化失败');
+            }
+        }
+
+        $('meeting-help-fab').addEventListener('click', () => toggleHelp());
+        $('close-help-btn').addEventListener('click', () => toggleHelp(false));
+        $('login-btn').addEventListener('click', async () => {
+            try {
+                await login();
+            } catch (error) {
+                showToast(error.message || '登录失败');
+            }
+        });
+        $('create-room-btn').addEventListener('click', async () => {
+            try {
+                await createMeetingRoomFromEntry();
+            } catch (error) {
+                showToast(error.message || '会议室创建失败');
+            }
+        });
+        $('entry-join-btn').addEventListener('click', async () => {
+            try {
+                await joinMeetingRoomFromEntry();
+            } catch (error) {
+                showToast(error.message || '加入会议室失败');
+            }
+        });
+        $('refresh-entry-room-list-btn').addEventListener('click', async () => {
+            try {
+                await loadMeetingRoomList();
+            } catch (error) {
+                showToast(error.message || '会议列表加载失败');
+            }
+        });
+        $('go-home-btn').addEventListener('click', () => {
+            window.location.href = '/index.html';
+        });
+        $('logout-btn').addEventListener('click', async () => {
+            try {
+                await logout();
+            } catch (error) {
+                showToast(error.message || '退出失败');
+            }
+        });
+        $('send-waiting-message-btn').addEventListener('click', async () => {
+            try {
+                await sendWaitingMessage();
+            } catch (error) {
+                showToast(error.message || '发送消息失败');
+            }
+        });
+        $('save-topic-btn').addEventListener('click', async () => {
+            try {
+                await saveTopic();
+            } catch (error) {
+                showToast(error.message || '保存主题失败');
+            }
+        });
+        $('save-order-btn').addEventListener('click', async () => {
+            try {
+                await saveTurnOrder();
+            } catch (error) {
+                showToast(error.message || '保存顺序失败');
+            }
+        });
+        $('start-meeting-btn').addEventListener('click', async () => {
+            try {
+                await startMeeting();
+            } catch (error) {
+                showToast(error.message || '开始会议失败');
+            }
+        });
+        $('send-discussion-message-btn').addEventListener('click', async () => {
+            try {
+                await sendDiscussionMessage();
+            } catch (error) {
+                showToast(error.message || '提交发言失败');
+            }
+        });
+        $('skip-turn-btn').addEventListener('click', async () => {
+            try {
+                await skipTurn();
+            } catch (error) {
+                showToast(error.message || '跳过失败');
+            }
+        });
+        $('end-meeting-btn').addEventListener('click', async () => {
+            try {
+                await endMeeting();
+            } catch (error) {
+                showToast(error.message || '结束会议失败');
+            }
+        });
+        $('copy-invite-btn').addEventListener('click', copyInviteLink);
+        $('open-report-btn').addEventListener('click', async () => {
+            try {
+                await generateMeetingReportAndOpen();
+            } catch (error) {
+                showToast(error.message || '生成报告失败');
+            }
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && state.room?.id && state.currentUser) {
+                requestImmediateRoomRefresh('visible_again').catch(() => {});
+            }
+        });
+        $('entry-room-code-input').addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                try {
+                    await joinMeetingRoomFromEntry();
+                } catch (error) {
+                    showToast(error.message || '加入会议室失败');
+                }
+            }
+        });
+
+        boot();
+    </script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演示稿 - 焦点小组讨论系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.16), transparent 26%),
+                linear-gradient(135deg, #f5f7fb 0%, #edf4ff 55%, #f8fafc 100%);
+            color: #0f172a;
+        }
+
+        .deck-shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .deck-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 22px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+            backdrop-filter: blur(18px);
+        }
+
+        .deck-stage {
+            margin-top: 22px;
+            min-height: 72vh;
+            border-radius: 32px;
+            overflow: hidden;
+            background: linear-gradient(140deg, #0f172a 0%, #172554 60%, #1e3a8a 100%);
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
+            position: relative;
+        }
+
+        .slide {
+            min-height: 72vh;
+            padding: 48px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 28px;
+        }
+
+        .slide-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.72);
+            font-weight: 800;
+        }
+
+        .slide h1,
+        .slide h2 {
+            margin: 0;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .slide h1 {
+            font-size: clamp(2.6rem, 5vw, 4.8rem);
+            max-width: 920px;
+        }
+
+        .slide h2 {
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            max-width: 920px;
+        }
+
+        .slide-subtitle {
+            max-width: 820px;
+            font-size: 1.08rem;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .slide-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .bullet-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 24px;
+            padding: 20px 22px;
+            line-height: 1.8;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.94);
+        }
+
+        .deck-toolbar {
+            margin-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+        }
+
+        .toolbar-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #0f172a;
+            background: rgba(15, 23, 42, 0.06);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+        }
+
+        .toolbar-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 14px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .presentation-help-anchor {
+            position: fixed;
+            left: 24px;
+            bottom: 24px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .presentation-help-btn {
+            width: 54px;
+            height: 54px;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            background: rgba(15, 23, 42, 0.92);
+            color: white;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .presentation-help-panel {
+            width: min(320px, calc(100vw - 48px));
+            padding: 18px 18px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 24px 50px rgba(15, 23, 42, 0.16);
+            color: #0f172a;
+            backdrop-filter: blur(18px);
+        }
+
+        .presentation-help-panel.hidden {
+            display: none;
+        }
+
+        .presentation-help-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .presentation-help-close {
+            border: none;
+            background: transparent;
+            color: #475569;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .presentation-help-list {
+            margin: 0;
+            padding-left: 18px;
+            line-height: 1.8;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .loading,
+        .error-state {
+            min-height: 72vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            .slide {
+                padding: 28px;
+            }
+
+            .slide-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .deck-topbar,
+            .deck-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="deck-shell">
+        <header class="deck-topbar">
+            <div>
+                <div class="text-xs uppercase tracking-[0.2em] text-slate-500 font-bold">HTML Presentation</div>
+                <h1 class="text-2xl font-extrabold mt-1 text-slate-900">演示稿播放页</h1>
+                <p id="deck-subtitle" class="text-sm text-slate-500 mt-1">基于已生成分析报告自动整理</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button id="back-report-btn" class="toolbar-btn"><i class="fas fa-arrow-left"></i> 返回报告</button>
+                <button id="export-pptx-btn" class="toolbar-btn"><i class="fas fa-file-powerpoint"></i> 导出 PPTX</button>
+                <button id="enter-fullscreen-btn" class="toolbar-btn primary"><i class="fas fa-expand"></i> 全屏播放</button>
+            </div>
+        </header>
+
+        <main id="presentation-stage" class="deck-stage">
+            <div class="loading" id="presentation-loading">
+                <div class="text-5xl">📽️</div>
+                <div class="text-lg font-semibold">正在加载演示稿...</div>
+            </div>
+        </main>
+
+        <div class="deck-toolbar">
+            <div class="flex gap-3">
+                <button id="prev-slide-btn" class="toolbar-btn"><i class="fas fa-chevron-left"></i> 上一页</button>
+                <button id="next-slide-btn" class="toolbar-btn">下一页 <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="slide-counter" id="slide-counter">0 / 0</div>
+        </div>
+
+        <div class="presentation-help-anchor">
+            <div id="presentation-help-panel" class="presentation-help-panel hidden" aria-hidden="true">
+                <div class="presentation-help-title">
+                    <div class="font-bold text-sm tracking-wide text-slate-900">操作指南</div>
+                    <button id="presentation-help-close-btn" class="presentation-help-close" type="button" aria-label="关闭操作指南">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <ul class="presentation-help-list">
+                    <li>按键盘 <strong>← / →</strong> 或 <strong>PageUp / PageDown</strong> 翻页。</li>
+                    <li>点击底部 <strong>上一页 / 下一页</strong> 按钮也可以切换页面。</li>
+                    <li>点击右上角 <strong>全屏播放</strong> 进入全屏演讲模式。</li>
+                    <li>按 <strong>Esc</strong> 可以退出全屏。</li>
+                    <li>需要离线汇报时，可直接点击 <strong>导出 PPTX</strong>。</li>
+                </ul>
+            </div>
+            <button id="presentation-help-btn" class="presentation-help-btn" type="button" aria-label="打开操作指南">?</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let presentationData = null;
+        let currentSlideIndex = 0;
+
+        function getScenarioIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('scenario_id');
+        }
+
+        function renderError(message) {
+            document.getElementById('presentation-stage').innerHTML = `
+                <div class="error-state">
+                    <div class="text-5xl">😕</div>
+                    <div class="text-2xl font-bold">无法加载演示稿</div>
+                    <div class="text-sm text-white/80">${message}</div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderSlide() {
+            if (!presentationData || !Array.isArray(presentationData.slides) || !presentationData.slides.length) {
+                renderError('当前没有可播放的演示稿。');
+                return;
+            }
+
+            const slide = presentationData.slides[currentSlideIndex];
+            const bullets = Array.isArray(slide.bullets) ? slide.bullets : [];
+            const bulletCards = bullets.map(item => `<div class="bullet-card">${escapeHtml(item)}</div>`).join('');
+
+            document.getElementById('presentation-stage').innerHTML = `
+                <section class="slide">
+                    <div class="slide-meta">
+                        <span>${escapeHtml(slide.type || 'slide')}</span>
+                        <span>${currentSlideIndex + 1} / ${presentationData.slides.length}</span>
+                    </div>
+                    <div class="flex flex-col gap-6">
+                        ${slide.type === 'cover'
+                            ? `<h1>${escapeHtml(slide.title || presentationData.report_title || '演示稿')}</h1>`
+                            : `<h2>${escapeHtml(slide.title || '未命名页面')}</h2>`}
+                        ${slide.subtitle ? `<div class="slide-subtitle">${escapeHtml(slide.subtitle)}</div>` : ''}
+                        ${bullets.length ? `<div class="slide-grid">${bulletCards}</div>` : ''}
+                    </div>
+                    <div class="slide-meta">
+                        <span>${escapeHtml(presentationData.report_title || '')}</span>
+                        <span>${presentationData.generated_at ? new Date(presentationData.generated_at).toLocaleString('zh-CN') : ''}</span>
+                    </div>
+                </section>
+            `;
+
+            document.getElementById('slide-counter').textContent = `${currentSlideIndex + 1} / ${presentationData.slides.length}`;
+            document.getElementById('prev-slide-btn').disabled = currentSlideIndex === 0;
+            document.getElementById('next-slide-btn').disabled = currentSlideIndex >= presentationData.slides.length - 1;
+        }
+
+        async function loadPresentation() {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                renderError('缺少场景 ID。');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/presentation`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || '加载演示稿失败');
+                }
+
+                presentationData = await response.json();
+                document.getElementById('deck-subtitle').textContent = presentationData.report_title || '基于已生成分析报告自动整理';
+                renderSlide();
+            } catch (error) {
+                renderError(error.message || '加载演示稿失败');
+            }
+        }
+
+        function nextSlide() {
+            if (!presentationData || currentSlideIndex >= presentationData.slides.length - 1) return;
+            currentSlideIndex += 1;
+            renderSlide();
+        }
+
+        function prevSlide() {
+            if (!presentationData || currentSlideIndex <= 0) return;
+            currentSlideIndex -= 1;
+            renderSlide();
+        }
+
+        function setHelpPanelVisible(visible) {
+            const panel = document.getElementById('presentation-help-panel');
+            if (!panel) return;
+            panel.classList.toggle('hidden', !visible);
+            panel.setAttribute('aria-hidden', visible ? 'false' : 'true');
+        }
+
+        async function exportPptx() {
+            const scenarioId = getScenarioIdFromUrl();
+            if (!scenarioId) {
+                renderError('缺少场景 ID。');
+                return;
+            }
+
+            const button = document.getElementById('export-pptx-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 导出中...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/scenarios/${scenarioId}/presentation/pptx`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || '导出 PPTX 失败');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const contentDisposition = response.headers.get('Content-Disposition') || '';
+                const match = contentDisposition.match(/filename="?([^"]+)"?/i);
+                a.href = url;
+                a.download = match ? decodeURIComponent(match[1]) : `分析演示稿_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.pptx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                renderError(error.message || '导出 PPTX 失败');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        document.getElementById('next-slide-btn').addEventListener('click', nextSlide);
+        document.getElementById('prev-slide-btn').addEventListener('click', prevSlide);
+        document.getElementById('export-pptx-btn').addEventListener('click', exportPptx);
+        document.getElementById('presentation-help-btn').addEventListener('click', (event) => {
+            event.stopPropagation();
+            const panel = document.getElementById('presentation-help-panel');
+            setHelpPanelVisible(panel.classList.contains('hidden'));
+        });
+        document.getElementById('presentation-help-close-btn').addEventListener('click', (event) => {
+            event.stopPropagation();
+            setHelpPanelVisible(false);
+        });
+        document.getElementById('enter-fullscreen-btn').addEventListener('click', async () => {
+            const stage = document.getElementById('presentation-stage');
+            if (stage.requestFullscreen) {
+                await stage.requestFullscreen();
+            }
+        });
+        document.getElementById('back-report-btn').addEventListener('click', () => {
+            const scenarioId = getScenarioIdFromUrl();
+            window.location.href = `/report?scenario_id=${scenarioId || ''}`;
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight' || event.key === 'PageDown') nextSlide();
+            if (event.key === 'ArrowLeft' || event.key === 'PageUp') prevSlide();
+            if (event.key === 'Escape') setHelpPanelVisible(false);
+        });
+        document.addEventListener('click', (event) => {
+            const panel = document.getElementById('presentation-help-panel');
+            const button = document.getElementById('presentation-help-btn');
+            if (!panel || panel.classList.contains('hidden')) return;
+            if (panel.contains(event.target) || button.contains(event.target)) return;
+            setHelpPanelVisible(false);
+        });
+        document.addEventListener('DOMContentLoaded', loadPresentation);
+    </script>
+</body>
+</html>

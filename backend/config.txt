@@ -1,6 +1,44 @@
-DEEPSEEK_API_KEY=sk-ddfba6f4e1264d89911b946ced3d66a7
+DEEPSEEK_API_KEY=sk-babebe9bcad748dfb68b111666308399
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 MODEL=deepseek-chat
 MAX_TOKENS=4096
 TEMPERATURE=0.7
 P=0.95
+
+# ======================== 验证码配置 ========================
+# 发送渠道：test（测试模式，验证码打印到日志）/ email（邮箱）/ sms（短信）/ auto（自动选择）
+VERIFICATION_CHANNEL=email
+# 验证码有效期（秒）
+VERIFICATION_TTL=300
+# 发送频率限制（秒）
+VERIFICATION_COOLDOWN=60
+# 最大验证次数
+VERIFICATION_MAX_ATTEMPTS=3
+
+# ======================== 邮箱 SMTP 配置（VERIFICATION_CHANNEL=email 时生效）========================
+# QQ邮箱示例：SMTP_HOST=smtp.qq.com, SMTP_PORT=465, SMTP_USE_SSL=true, SMTP_USER=xxx@qq.com, SMTP_PASSWORD=授权码
+# 163邮箱示例：SMTP_HOST=smtp.163.com, SMTP_PORT=465, SMTP_USE_SSL=true
+# Gmail示例：SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USE_SSL=true
+EMAIL_SMTP_HOST=smtp.163.com
+EMAIL_SMTP_PORT=465
+EMAIL_SMTP_USE_SSL=true
+EMAIL_SMTP_USER=19988527834@163.com
+EMAIL_SMTP_PASSWORD=
+EMAIL_FROM_NAME=焦点小组系统
+
+# ======================== 短信配置（VERIFICATION_CHANNEL=sms 时生效，需额外配置）========================
+SMS_ACCESS_KEY_ID=
+SMS_ACCESS_KEY_SECRET=
+SMS_SIGN_NAME=
+SMS_TEMPLATE_CODE=
+
+VERIFICATION_CHANNEL=email
+VERIFICATION_TTL=600
+VERIFICATION_COOLDOWN=60
+EMAIL_SMTP_HOST=smtp.scott-sloan.cn
+EMAIL_SMTP_PORT=587
+EMAIL_SMTP_USE_SSL=false
+EMAIL_SMTP_USER=MTX_Official@mail.scott-sloan.cn
+EMAIL_SMTP_PASSWORD=123456789
+EMAIL_FROM_NAME=Matrix
+USER_AI_CONFIG_SECRET=
